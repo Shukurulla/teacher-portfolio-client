@@ -29,11 +29,11 @@ const Home = () => {
           <div className="col-9">
             <div className="flex items-start justify-between">
               <div className="user-info">
-                <h1 className="text-[25px] font-semibold">{user.firstName}</h1>
+                <h1 className="text-[25px] font-semibold">{user?.firstName}</h1>
                 <h1 className="text-[25px] font-semibold py-3">
-                  {user.lastName}
+                  {user?.lastName}
                 </h1>
-                <h1 className="text-[25px] font-semibold">{user.phone}</h1>
+                <h1 className="text-[25px] font-semibold">{user?.phone}</h1>
               </div>
               <div className="action w-[50%] text-end pr-3">
                 <button>
@@ -89,7 +89,20 @@ const Home = () => {
                     <h1>{item.achievments.title}</h1>
                     <p>{item.achievments.rating.ratingTitle}</p>
                   </div>
-                  <div className="file"></div>
+                  <div className="file mt-2">
+                    <a
+                      href={`http://45.134.39.117:7474${item.fileUrl}`}
+                      className="flex items-center gap-3"
+                    >
+                      <img
+                        src="https://w7.pngwing.com/pngs/521/255/png-transparent-computer-icons-data-file-document-file-format-others-thumbnail.png"
+                        alt=""
+                        width={50}
+                        height={50}
+                      />
+                      <p>Fileni ko'rish</p>
+                    </a>
+                  </div>
                 </BoxComponent>
               </div>
             ))

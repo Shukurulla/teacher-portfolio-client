@@ -13,7 +13,7 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="user text-[17px] font-semibold flex gap-2">
-          <span className="username">{user.firstName}</span>
+          <span className="username">{user?.firstName}</span>
           <i className="bi bi-chevron-down"></i>
         </div>
       </div>
