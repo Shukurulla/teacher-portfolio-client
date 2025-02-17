@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import BoxComponent from "../../components/box.component";
 import FilesService from "../../service/file.service";
+import FileImage from "../../../public/file.jpg";
 
 const Home = () => {
   const { user } = useSelector((state) => state.user);
@@ -27,22 +28,32 @@ const Home = () => {
             </div>
           </div>
           <div className="col-9">
-            <div className="flex items-start justify-between">
-              <div className="user-info">
-                <h1 className="text-[25px] font-semibold">{user?.firstName}</h1>
-                <h1 className="text-[25px] font-semibold py-3">
-                  {user?.lastName}
+            <div className="flex w-100 py-3 items-start justify-between">
+              <div className="user-info w-[50%]">
+                <h1 className="text-[20px] flex items-center justify-between gap-4 font-semibold">
+                  {" "}
+                  <span>Ismingiz: </span>
+                  <span className="text-[17px]"> {user?.firstName}</span>
                 </h1>
-                <h1 className="text-[25px] font-semibold">{user?.phone}</h1>
+                <h1 className="text-[20px] flex items-center justify-between gap-2 font-semibold py-3">
+                  <span>Familiyangiz: </span>
+                  <span className="text-[17px]">{user?.lastName}</span>
+                </h1>
+                <h1 className="text-[20px] flex items-center justify-between gap-2 font-semibold">
+                  <span>Telefon raqam:</span>
+                  <span className="text-[17px]"> {user?.phone} </span>
+                </h1>
               </div>
-              <div className="action w-[50%] text-end pr-3">
-                <button>
+              <div className="action w-[40%] text-end pr-3">
+                <button onClick={() => navigate("/settings")}>
                   <i className="bi text-[20px] bi-gear"></i>
                 </button>
-                <div className="score">
+                <div className="score mt-3">
                   <p>Natija: 0 ball</p>
                   <div className="progress">
-                    <div className="bg-black w-[0%]"></div>
+                    <div
+                      className={`bg-blue-600 w-[${myFiles.length * 10}%]`}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -94,12 +105,7 @@ const Home = () => {
                       href={`http://45.134.39.117:7474${item.fileUrl}`}
                       className="flex items-center gap-3"
                     >
-                      <img
-                        src="https://w7.pngwing.com/pngs/521/255/png-transparent-computer-icons-data-file-document-file-format-others-thumbnail.png"
-                        alt=""
-                        width={50}
-                        height={50}
-                      />
+                      <img src={FileImage} alt="" width={50} height={50} />
                       <p>Fileni ko'rish</p>
                     </a>
                   </div>

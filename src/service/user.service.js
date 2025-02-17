@@ -20,7 +20,24 @@ const UserService = {
         return toast.success("Registratsiyadan muaffaqqiyatli o'tdingiz");
       }, 200);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
+      dispatch(getUserFailure());
+    }
+  },
+  async loginUser(dispatch, user, navigate) {
+    dispatch(getUserStart());
+    try {
+      const { data } = await axios.post("/teacher/login", user);
+      if (data.token) {
+        localStorage.setItem("teacher-jwt", data.token);
+      }
+      dispatch(getUserSuccess(data.data));
+      navigate("/");
+      setTimeout(() => {
+        return toast.success("Profilga muaffaqiyatli kirildi");
+      }, 200);
+    } catch (error) {
+      toast.error(error.response.data.message);
       dispatch(getUserFailure());
     }
   },

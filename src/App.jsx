@@ -10,6 +10,8 @@ import Layout from "./pages/main/layout";
 import RegisterPage from "./pages/sign/register.page";
 import AchievmentService from "./service/achievment.service";
 import UserService from "./service/user.service";
+import LoginPage from "./pages/sign/login";
+import EditProfile from "./pages/edit-profil/editProfile";
 
 const App = () => {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ const App = () => {
   const { achievments } = useSelector((state) => state.achievment);
   useEffect(() => {
     if (!localStorage.getItem("teacher-jwt")) {
-      return navigate("/auth/register");
+      return navigate("/auth/login");
     }
     UserService.getUser(dispatch, navigate);
   }, []);
@@ -27,6 +29,7 @@ const App = () => {
       <Toaster />
       <Routes>
         <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/" element={<Layout activePage={<Home />} />} />
         <Route
           path="/achievments"
@@ -43,6 +46,10 @@ const App = () => {
               activePage={achievments ? <CreateAchievmetSection /> : ""}
             />
           }
+        />
+        <Route
+          path="/settings"
+          element={<Layout activePage={<EditProfile />} />}
         />
       </Routes>
     </>

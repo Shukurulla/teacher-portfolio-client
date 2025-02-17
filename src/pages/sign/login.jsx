@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import UserService from "../../service/user.service";
 
-const RegisterPage = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+const LoginPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const { isLoading } = useSelector((state) => state.user);
@@ -16,39 +14,17 @@ const RegisterPage = () => {
   const postHandler = async (e) => {
     e.preventDefault();
     const userSchema = {
-      firstName,
-      lastName,
       phone,
       password,
     };
-    await UserService.postUser(dispatch, userSchema, navigate);
+    await UserService.loginUser(dispatch, userSchema, navigate);
   };
 
   return (
     <main className="lg:w-[30%] w-[90%] my-5 py-5 mx-auto">
       <form onSubmit={(e) => postHandler(e)}>
-        <h1 className="h3 mb-3 fw-normal">Ro'yhatdan otish</h1>
+        <h1 className="h3 mb-3 fw-normal">Profilga Kirish</h1>
 
-        <div className="">
-          <input
-            type="text"
-            className="form-control py-1"
-            id="floatingInput"
-            placeholder="Ismingiz"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </div>
-        <div className="my-2">
-          <input
-            type="text"
-            className="form-control"
-            id="floatingInput"
-            placeholder="Familiyangiz"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
         <div className="">
           <input
             type="text"
@@ -78,9 +54,9 @@ const RegisterPage = () => {
           {isLoading ? "Yuborilmoqda..." : "Yuborish"}
         </button>
         <p className="mt-2">
-          Oldin ro'yhantdan otganmisiz?{" "}
-          <Link to={"/auth/login"} className="text-primary">
-            Kirish
+          Oldin ro'yhantdan otmaganmisiz?{" "}
+          <Link to={"/auth/register"} className="text-primary">
+            Ro'yhatdan o'tish
           </Link>
         </p>
       </form>
@@ -88,4 +64,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;
