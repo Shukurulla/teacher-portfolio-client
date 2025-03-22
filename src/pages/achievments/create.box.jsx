@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BoxComponent from "../../components/box.component";
 import FilesService from "../../service/file.service";
+import AchievmentService from "../../service/achievment.service";
 
-const CreateBox = ({ state, setState }) => {
+const CreateBox = ({ state, setState, id }) => {
   const [file, setFile] = useState();
   const dispatch = useDispatch();
   const [rating, setRating] = useState(state.ratings[0].about);
@@ -14,19 +15,23 @@ const CreateBox = ({ state, setState }) => {
     setFile(e.target.files[0]);
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
+    console.log(id);
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("title", state.title);
     formData.append("teacherId", user._id);
     formData.append("achievmentId", state._id);
     formData.append("ratingTitle", rating);
+    formData.append("job", id);
     formData.append(
       "rating",
       state.ratings.filter((c) => c.about == rating)[0].rating
     );
-    FilesService.postFiles(dispatch, formData);
+    await FilesService.postFiles(dispatch, formData);
+    await AchievmentService.getAchievments(dispatch, id);
     setState({ state: false, value: {} });
   };
 

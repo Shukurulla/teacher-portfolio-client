@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import BoxComponent from "../../components/box.component";
 import FilesService from "../../service/file.service";
+import FileImage from "../../../public/file.jpg";
+import AchievmentComponent from "../../components/achievment.component";
 
 const Achievments = () => {
   const { myFiles, isLoading } = useSelector((state) => state.file);
@@ -12,10 +14,10 @@ const Achievments = () => {
     FilesService.getFiles(dispatch);
   }, []);
   return isLoading ? (
-    <p>Loading...</p>
+    <p className="p-4">Loading...</p>
   ) : (
     <div>
-      <div className="">
+      <div className="p-4">
         {myFiles.length == 0 ? (
           <div className="bg-[#fff] text-center w-100 p-3 rounded-[10px] shadow-md mt-3">
             <h1 className="text-[20px] font-semibold">
@@ -31,21 +33,9 @@ const Achievments = () => {
             </div>
           </div>
         ) : (
-          myFiles.map((item) => (
+          myFiles.myFiles.map((item) => (
             <div className="mt-3">
-              <BoxComponent>
-                <div className="section mb-3 font-bold flex items-center justify-between">
-                  <h1>{item.achievments.section}</h1>
-                  <div className="bg-orange-600 text-[14px] py-1 px-2 rounded-md font-semibold text-white">
-                    {item.status}
-                  </div>
-                </div>
-                <div className="title mt-3 flex item-center justify-between font-semibold">
-                  <h1>{item.achievments.title}</h1>
-                  <p>{item.achievments.rating.ratingTitle}</p>
-                </div>
-                <div className="file"></div>
-              </BoxComponent>
+              <AchievmentComponent item={item} />
             </div>
           ))
         )}

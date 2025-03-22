@@ -53,5 +53,16 @@ const UserService = {
       dispatch(getUserFailure());
     }
   },
+  async editProfile(dispatch, id, value) {
+    dispatch(getUserStart());
+    try {
+      const { data } = await axios.put(`/teacher/edit/${id}`, value);
+
+      dispatch(getUserSuccess(data.data));
+    } catch (error) {
+      console.log(error);
+      dispatch(getUserFailure());
+    }
+  },
 };
 export default UserService;

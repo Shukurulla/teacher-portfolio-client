@@ -12,6 +12,8 @@ import AchievmentService from "./service/achievment.service";
 import UserService from "./service/user.service";
 import LoginPage from "./pages/sign/login";
 import EditProfile from "./pages/edit-profil/editProfile";
+import JobPage from "./pages/jobs/job.page";
+import Profile from "./pages/profile/profile";
 
 const App = () => {
   const navigate = useNavigate();
@@ -36,11 +38,11 @@ const App = () => {
           element={<Layout activePage={<Achievments />} />}
         />
         <Route
-          path="/achievment/create"
+          path="/achievment/create/:id"
           element={<Layout activePage={<CreateAchievment />} />}
         />
         <Route
-          path="/achievment/create/section/:slug"
+          path="/achievment/create/:id/section/:slug"
           element={
             <Layout
               activePage={achievments ? <CreateAchievmetSection /> : ""}
@@ -51,6 +53,8 @@ const App = () => {
           path="/settings"
           element={<Layout activePage={<EditProfile />} />}
         />
+        <Route path="/job/:id" element={<Layout activePage={<JobPage />} />} />
+        <Route path="/profile" element={<Layout activePage={<Profile />} />} />
       </Routes>
     </>
   );

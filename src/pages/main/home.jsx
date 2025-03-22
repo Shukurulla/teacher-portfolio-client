@@ -1,119 +1,118 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import BoxComponent from "../../components/box.component";
 import FilesService from "../../service/file.service";
 import FileImage from "../../../public/file.jpg";
+import AchievmentComponent from "../../components/achievment.component";
+import JobService from "../../service/job.service";
+import ModalComponent from "../../components/modal.component";
 
 const Home = () => {
-  const { user } = useSelector((state) => state.user);
-  const { myFiles } = useSelector((state) => state.file);
+  const { jobs, isLoading } = useSelector((state) => state.job);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
+  const [jobTitle, setJobTitle] = useState("");
+  const [workplace, setWorkplace] = useState("");
 
   useEffect(() => {
     FilesService.getFiles(dispatch);
+    JobService.getJobs(dispatch);
   }, []);
+
+  const submitHandler = () => {
+    JobService.createJob(dispatch, { title: jobTitle, workplace });
+    setJobTitle("");
+    setWorkplace("");
+    setOpenModal(false);
+  };
 
   return (
     <div>
-      <div className="bg-[#fff] w-100 p-3 rounded-[10px] shadow-md">
-        <div className="row">
-          <div className="col-3">
-            <div className="w-[70%] mx-auto">
-              <img
-                src="https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
-                alt=""
-              />
-            </div>
-          </div>
-          <div className="col-9">
-            <div className="flex w-100 py-3 items-start justify-between">
-              <div className="user-info w-[50%]">
-                <h1 className="text-[20px] flex items-center justify-between gap-4 font-semibold">
-                  {" "}
-                  <span>Ismingiz: </span>
-                  <span className="text-[17px]"> {user?.firstName}</span>
-                </h1>
-                <h1 className="text-[20px] flex items-center justify-between gap-2 font-semibold py-3">
-                  <span>Familiyangiz: </span>
-                  <span className="text-[17px]">{user?.lastName}</span>
-                </h1>
-                <h1 className="text-[20px] flex items-center justify-between gap-2 font-semibold">
-                  <span>Telefon raqam:</span>
-                  <span className="text-[17px]"> {user?.phone} </span>
-                </h1>
-              </div>
-              <div className="action w-[40%] text-end pr-3">
-                <button onClick={() => navigate("/settings")}>
-                  <i className="bi text-[20px] bi-gear"></i>
-                </button>
-                <div className="score mt-3">
-                  <p>Natija: 0 ball</p>
-                  <div className="progress">
-                    <div
-                      className={`bg-blue-600 w-[${myFiles.length * 10}%]`}
-                    ></div>
-                  </div>
+      <ModalComponent state={openModal}>
+        <div className="w-100 h-100 flex items-center justify-center">
+          <div className="w-[50%]">
+            <BoxComponent>
+              <h1 className="text-xl font-[600]">Kasb qo'shish</h1>
+              <div className="mt-4">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    class="form-control"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    id="floatingInput"
+                    placeholder="Kasbingiz"
+                  />
+                  <label for="floatingInput">Kasbingiz</label>
                 </div>
+                <div class="form-floating my-3">
+                  <input
+                    type="text"
+                    value={workplace}
+                    onChange={(e) => setWorkplace(e.target.value)}
+                    class="form-control"
+                    id="floatingInput"
+                    placeholder="Ish joyingiz"
+                  />
+                  <label for="floatingInput">Ish joyingiz</label>
+                </div>
+                <button
+                  onClick={() => submitHandler()}
+                  className="btn btn-primary mr-3"
+                  disabled={isLoading}
+                >
+                  Qoshish
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setOpenModal(false)}
+                  disabled={isLoading}
+                >
+                  Bekor qilish
+                </button>
               </div>
-            </div>
+            </BoxComponent>
           </div>
         </div>
-      </div>
-      <div className="py-3 pb-[100px]">
+      </ModalComponent>
+      <div className="p-3 pb-[100px]">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-[25px] font-semibold ">Mening yutuqlarim</h1>
+          <h1 className="text-[25px] font-semibold ">Mening kasblarim</h1>
           <button
-            onClick={() => navigate("achievment/create/")}
+            onClick={() => setOpenModal(true)}
             className="bg-primary text-white px-2 py-1 rounded-md"
           >
-            Yutuq qoshish
+            Kasb qoshish
           </button>
         </div>
-        <div className="">
-          {myFiles.length == 0 ? (
-            <div className="bg-[#fff] text-center w-100 p-3 rounded-[10px] shadow-md mt-3">
-              <h1 className="text-[20px] font-semibold">
-                Sizning yutuqlaringiz topilmadi
-              </h1>
-
-              <div
-                onClick={() => navigate("/achievment/create")}
-                className=" inline-block p-3 border-3 mt-2 rounded-lg cursor-pointer border-[#5c5b5b]"
-              >
-                <i className="bi bi-plus-lg text-[20px]"></i>
-                <span className="block">Yutuq qoshish</span>
-              </div>
-            </div>
-          ) : (
-            myFiles.map((item) => (
-              <div className="mt-3">
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            {jobs.map((item) => (
+              <div className="mb-3">
                 <BoxComponent>
-                  <div className="section mb-3 font-bold flex items-center justify-between">
-                    <h1>{item.achievments.section}</h1>
-                    <div className="bg-orange-600 text-[14px] py-1 px-2 rounded-md font-semibold text-white">
-                      {item.status}
+                  <div className="flex mb-3 items-center justify-between">
+                    <div>
+                      <h1 className="text-xl font-[500]">{item.title}</h1>
+                      <p>{item.workplace}</p>
                     </div>
-                  </div>
-                  <div className="title mt-3 flex item-center justify-between font-semibold">
-                    <h1>{item.achievments.title}</h1>
-                    <p>{item.achievments.rating.ratingTitle}</p>
-                  </div>
-                  <div className="file mt-2">
-                    <a
-                      href={`http://45.134.39.117:7474${item.fileUrl}`}
-                      className="flex items-center gap-3"
-                    >
-                      <img src={FileImage} alt="" width={50} height={50} />
-                      <p>Fileni ko'rish</p>
-                    </a>
+                    <div>
+                      <button
+                        onClick={() => navigate(`/job/${item._id}`)}
+                        className="btn btn-primary"
+                      >
+                        Batafsil
+                      </button>
+                    </div>
                   </div>
                 </BoxComponent>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

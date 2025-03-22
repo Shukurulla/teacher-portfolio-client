@@ -11,10 +11,10 @@ const CreateAchievmetSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { slug, id } = useParams();
   useEffect(() => {
-    AchievmentService.getAchievments(dispatch);
+    AchievmentService.getAchievments(dispatch, id);
   }, []);
-  const { slug } = useParams();
   const sectionAchievments = achievments.filter(
     (c) => generateSlug(c.section) == generateSlug(slug)
   )[0];
@@ -27,11 +27,15 @@ const CreateAchievmetSection = () => {
   return isLoading ? (
     <p>Loading</p>
   ) : (
-    <div className="pb-5">
+    <div className="p-4">
       {sectionAchievments ? (
         <div className={``}>
           {modalState.state ? (
-            <CreateBox state={modalState.value} setState={setModalState} />
+            <CreateBox
+              state={modalState.value}
+              setState={setModalState}
+              id={id}
+            />
           ) : (
             ""
           )}

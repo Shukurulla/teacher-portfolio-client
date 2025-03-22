@@ -13,6 +13,11 @@ const Sidebar = () => {
       path: "/achievments",
       icon: "bi-award",
     },
+    {
+      label: "Profil",
+      path: "/profile",
+      icon: "bi-award",
+    },
   ];
   return (
     <div className="mt-2">
