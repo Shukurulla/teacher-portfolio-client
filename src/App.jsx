@@ -14,6 +14,7 @@ import LoginPage from "./pages/sign/login";
 import EditProfile from "./pages/edit-profil/editProfile";
 import JobPage from "./pages/jobs/job.page";
 import Profile from "./pages/profile/profile";
+import AchievementsPage from "./pages/main/achievments";
 
 const App = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const App = () => {
         <Route path="/" element={<Layout activePage={<Home />} />} />
         <Route
           path="/achievments"
-          element={<Layout activePage={<Achievments />} />}
+          element={<Layout activePage={<AchievementsPage />} />}
         />
         <Route
           path="/achievment/create/:id"

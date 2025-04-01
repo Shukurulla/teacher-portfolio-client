@@ -1,47 +1,118 @@
-import React from "react";
-import BoxComponent from "./box.component";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { FiPlus, FiAward, FiEye, FiClock, FiCheck, FiX } from "react-icons/fi";
+import { Button, Badge } from "react-bootstrap";
+import FilesService from "../service/file.service";
+import FileViewerComponent from "./FileViewerComponent";
 import FileImage from "../../public/file.jpg";
 
 const AchievmentComponent = ({ item }) => {
-  const statusColor = () => {
-    if (item.status == "Tekshirilmoqda") {
-      return "bg-orange-600";
-    }
-    if (item.status == "Tasdiqlandi") {
-      return "bg-green-600";
-    }
-    if (item.status == "Tasdiqlanmadi") {
-      return "bg-red-600";
+  const { myFiles, isLoading } = useSelector((state) => state.file);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [viewingFile, setViewingFile] = useState(null);
+
+  useEffect(() => {
+    FilesService.getFiles(dispatch);
+  }, [dispatch]);
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "Tasdiqlandi":
+        return {
+          icon: <FiCheck className="mr-1" />,
+          variant: "success",
+          text: "Tasdiqlangan",
+        };
+      case "Tasdiqlanmadi":
+        return {
+          icon: <FiX className="mr-1" />,
+          variant: "danger",
+          text: "Rad etilgan",
+        };
+      default:
+        return {
+          icon: <FiClock className="mr-1" />,
+          variant: "warning",
+          text: "Kutilmoqda",
+        };
     }
   };
-  return (
-    <BoxComponent>
-      <h1 className="text-primary text-xl font-[600] ">
-        {item.from.job.title}
-      </h1>
-      <small className="mb-3">{item.from.job.workplace}</small>
-      <div className="section my-3 font-bold flex items-center justify-between">
-        <h1>{item.achievments.section}</h1>
-        <div
-          className={`${statusColor()} text-[14px] py-1 px-2 rounded-md font-semibold text-white`}
-        >
-          {item.status}
+
+  const handleCreateAchievement = () => {
+    navigate("/achievement/create");
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "80vh" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Yuklanmoqda...</span>
         </div>
       </div>
-      <div className="title mt-3 flex item-center justify-between font-semibold">
-        <h1>{item.achievments.title}</h1>
-        <p>{item.achievments.rating.ratingTitle}</p>
+    );
+  }
+
+  return (
+    <div key={item._id} className="col-md-12">
+      <div className="card h-100">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-start mb-3">
+            <h5 className="card-title mb-0">{item.achievments.title}</h5>
+            <Badge
+              bg={getStatusBadge(item.status).variant}
+              className="d-flex align-items-center"
+            >
+              {getStatusBadge(item.status).icon}
+              {getStatusBadge(item.status).text}
+            </Badge>
+          </div>
+
+          <p className="card-text text-muted mb-3">
+            {item.achievments.section}
+          </p>
+
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <span className="badge bg-light text-dark me-2">
+                <FiAward className="me-1" />
+                {item.achievments.rating.rating}/5
+              </span>
+              <small className="text-muted">
+                {item.achievments.rating.ratingTitle}
+              </small>
+            </div>
+
+            <div className="file mt-2">
+              <a
+                onClick={() =>
+                  setViewingFile({
+                    fileUrl: item.fileUrl,
+                    fileName: item.fileName,
+                  })
+                }
+                className="flex cursor-pointer items-center gap-3"
+              >
+                <img src={FileImage} alt="" width={30} height={30} />
+                <p>Fileni ko'rish</p>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="file mt-2">
-        <a
-          href={`http://45.134.39.117:7474${item.fileUrl}`}
-          className="flex items-center gap-3"
-        >
-          <img src={FileImage} alt="" width={50} height={50} />
-          <p>Fileni ko'rish</p>
-        </a>
-      </div>
-    </BoxComponent>
+      {/* Fayl ko'ruvchi modal */}
+      {viewingFile && (
+        <FileViewerComponent
+          fileUrl={viewingFile.fileUrl}
+          fileName={viewingFile.fileName}
+          onClose={() => setViewingFile(null)}
+        />
+      )}
+    </div>
   );
 };
 

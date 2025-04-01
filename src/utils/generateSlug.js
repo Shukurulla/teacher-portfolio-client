@@ -63,3 +63,14 @@ export function generateSlug(text) {
 
   return slug;
 }
+{
+  /* <div className="file mt-2">
+        <a
+          href={`http://45.134.39.117:7474${item.fileUrl}`}
+          className="flex items-center gap-3"
+        >
+          <img src={FileImage} alt="" width={50} height={50} />
+          <p>Fileni ko'rish</p>
+        </a>
+      </div> */
+}

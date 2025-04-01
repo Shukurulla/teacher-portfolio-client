@@ -1,116 +1,90 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import BoxComponent from "../../components/box.component";
-import FilesService from "../../service/file.service";
-import FileImage from "../../../public/file.jpg";
-import AchievmentComponent from "../../components/achievment.component";
+import { FiBriefcase, FiAward, FiBook, FiArrowRight } from "react-icons/fi";
 import JobService from "../../service/job.service";
-import ModalComponent from "../../components/modal.component";
+import FileService from "../../service/file.service";
+import FilesService from "../../service/file.service";
 
-const Home = () => {
+const TeacherJobsPage = () => {
   const { jobs, isLoading } = useSelector((state) => state.job);
+  const { myFiles } = useSelector((state) => state.file);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [openModal, setOpenModal] = useState(false);
-  const [jobTitle, setJobTitle] = useState("");
-  const [workplace, setWorkplace] = useState("");
 
   useEffect(() => {
-    FilesService.getFiles(dispatch);
     JobService.getJobs(dispatch);
+    FilesService.getFiles(dispatch);
   }, []);
 
-  const submitHandler = () => {
-    JobService.createJob(dispatch, { title: jobTitle, workplace });
-    setJobTitle("");
-    setWorkplace("");
-    setOpenModal(false);
+  // Har bir ish joyi uchun yutuqlar sonini hisoblash
+  const getAchievementsCount = (jobId) => {
+    return myFiles.filter((file) => file.from.job._id === jobId).length;
   };
 
   return (
-    <div>
-      <ModalComponent state={openModal}>
-        <div className="w-100 h-100 flex items-center justify-center">
-          <div className="w-[50%]">
-            <BoxComponent>
-              <h1 className="text-xl font-[600]">Kasb qo'shish</h1>
-              <div className="mt-4">
-                <div class="form-floating">
-                  <input
-                    type="text"
-                    class="form-control"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    id="floatingInput"
-                    placeholder="Kasbingiz"
-                  />
-                  <label for="floatingInput">Kasbingiz</label>
-                </div>
-                <div class="form-floating my-3">
-                  <input
-                    type="text"
-                    value={workplace}
-                    onChange={(e) => setWorkplace(e.target.value)}
-                    class="form-control"
-                    id="floatingInput"
-                    placeholder="Ish joyingiz"
-                  />
-                  <label for="floatingInput">Ish joyingiz</label>
-                </div>
-                <button
-                  onClick={() => submitHandler()}
-                  className="btn btn-primary mr-3"
-                  disabled={isLoading}
-                >
-                  Qoshish
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setOpenModal(false)}
-                  disabled={isLoading}
-                >
-                  Bekor qilish
-                </button>
-              </div>
-            </BoxComponent>
-          </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Ish Joylarim</h1>
+          <p className="text-gray-600 mt-2">
+            Faoliyat olib borayotgan muassasalar
+          </p>
         </div>
-      </ModalComponent>
-      <div className="p-3 pb-[100px]">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-[25px] font-semibold ">Mening kasblarim</h1>
-          <button
-            onClick={() => setOpenModal(true)}
-            className="bg-primary text-white px-2 py-1 rounded-md"
-          >
-            Kasb qoshish
-          </button>
-        </div>
+
         {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <div>
-            {jobs.map((item) => (
-              <div className="mb-3">
-                <BoxComponent>
-                  <div className="flex mb-3 items-center justify-between">
-                    <div>
-                      <h1 className="text-xl font-[500]">{item.title}</h1>
-                      <p>{item.workplace}</p>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : jobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {jobs.map((job) => (
+              <div
+                key={job._id}
+                className="bg-white rounded-xl shadow-md overflow-hidden transition-all hover:shadow-lg border border-gray-200"
+              >
+                <div className="p-6">
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-gray-800 mb-1">
+                      {job.title}
+                    </h2>
+                    <p className="text-gray-600 font-medium">{job.workplace}</p>
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center text-gray-700">
+                      <FiBook className="mr-3 text-blue-500" />
+                      <span>Asosiy fan: {job.title}</span>
                     </div>
-                    <div>
-                      <button
-                        onClick={() => navigate(`/job/${item._id}`)}
-                        className="btn btn-primary"
-                      >
-                        Batafsil
-                      </button>
+                    <div className="flex items-center text-gray-700">
+                      <FiAward className="mr-3 text-yellow-500" />
+                      <span>{getAchievementsCount(job._id)} ta yutuq</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <FiBriefcase className="mr-3 text-green-500" />
+                      <span>{job.workplace}</span>
                     </div>
                   </div>
-                </BoxComponent>
+
+                  <button
+                    onClick={() => navigate(`/job/${job._id}`)}
+                    className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition mt-4"
+                  >
+                    <span>Batafsil ko'rish</span>
+                    <FiArrowRight className="ml-2" />
+                  </button>
+                </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <h3 className="text-xl font-medium text-gray-700 mb-2">
+              Ish joylari mavjud emas
+            </h3>
+            <p className="text-gray-500">
+              Hozircha qo'shilgan ish joylaringiz yo'q
+            </p>
           </div>
         )}
       </div>
@@ -118,4 +92,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default TeacherJobsPage;

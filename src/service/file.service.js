@@ -10,8 +10,10 @@ const FilesService = {
   async getFiles(dispatch) {
     dispatch(getFilesStart());
     try {
-      const { data } = await axios.get("/file/my-files/");
-      dispatch(getFilesSuccess(data.data));
+      const { data } = await axios.get("/file/my-files");
+      console.log(data.data.myFiles);
+
+      dispatch(getFilesSuccess(data.data.myFiles));
     } catch (error) {
       console.log(error);
       dispatch(getFilesFailure());
