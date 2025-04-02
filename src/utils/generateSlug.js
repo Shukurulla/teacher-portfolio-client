@@ -74,3 +74,18 @@ export function generateSlug(text) {
         </a>
       </div> */
 }
+
+// <Button
+//               variant="outline-primary"
+//               size="sm"
+//               onClick={() =>
+//                 setViewingFile({
+//                   fileUrl: item.fileUrl,
+//                   fileName: item.fileName,
+//                 })
+//               }
+//               className="d-flex align-items-center"
+//             >
+//               <FiEye className="me-1" />
+//               Ko'rish
+//             </Button>

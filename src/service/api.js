@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://45.134.39.117:7474";
+axios.defaults.baseURL = "https://teacher-portfolio-server.vercel.app";
 axios.interceptors.request.use((option) => {
   const token = localStorage.getItem("teacher-jwt")
     ? localStorage.getItem("teacher-jwt")
