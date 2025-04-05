@@ -215,7 +215,7 @@ const Profile = () => {
               </div>
 
               {/* Progress Section */}
-              <div className="bg-gray-50 p-4 rounded-lg">
+              {/* <div className="bg-gray-50 p-4 rounded-lg">
                 <h2 className="font-medium mb-3 flex items-center">
                   <FiSettings className="mr-2 text-primary" />
                   Natijalar
@@ -240,7 +240,7 @@ const Profile = () => {
                     }}
                   ></div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

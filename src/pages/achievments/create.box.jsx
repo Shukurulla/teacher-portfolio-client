@@ -36,7 +36,7 @@ const CreateBox = ({ state, setState, id }) => {
   };
 
   return (
-    <div className="w-100  h-[100vh] bg-[#504f4f6c] fixed top-0 flex items- py-5 justify-center left-0">
+    <div className="w-100  h-[100vh] bg-[#504f4f6c] fixed top-0 flex items-center py-5 justify-center left-0">
       <div className="w-[80%] md:w-[50%]">
         <BoxComponent>
           <h1 className="font-semibold">{state.title}</h1>

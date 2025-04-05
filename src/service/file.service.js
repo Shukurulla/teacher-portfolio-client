@@ -26,10 +26,11 @@ const FilesService = {
       if (data.status == "success") {
         const { data } = await axios.get("/file/my-files/");
         dispatch(getFilesSuccess(data.data));
+        toast.success(`Yutuq muaffaqiyatli qoshildi`);
       }
-      toast.success(`Yutuq muaffaqiyatli qoshildi`);
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.message);
       dispatch(getFilesFailure());
     }
   },

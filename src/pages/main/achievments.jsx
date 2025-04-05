@@ -77,7 +77,7 @@ const AchievementsPage = () => {
         </div>
       ) : (
         <div className="row g-4">
-          {myFiles.map((item) => {
+          {myFiles?.map((item) => {
             const status = getStatusBadge(item.status);
             return (
               <div key={item._id} className="col-md-6">

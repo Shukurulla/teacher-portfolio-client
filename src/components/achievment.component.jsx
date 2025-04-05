@@ -1,110 +1,172 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { FiPlus, FiAward, FiEye, FiClock, FiCheck, FiX } from "react-icons/fi";
-import { Button, Badge } from "react-bootstrap";
-import FilesService from "../service/file.service";
+import React, { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "../service/api";
+import {
+  FiAward,
+  FiEye,
+  FiClock,
+  FiCheck,
+  FiX,
+  FiTrash2,
+  FiMessageSquare,
+} from "react-icons/fi";
 import FileViewerComponent from "./FileViewerComponent";
 import FileImage from "../../public/file.jpg";
+import Swal from "sweetalert2";
 
-const AchievmentComponent = ({ item }) => {
-  const { myFiles, isLoading } = useSelector((state) => state.file);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+const AchievmentComponent = ({ item, jobId }) => {
+  const queryClient = useQueryClient();
   const [viewingFile, setViewingFile] = useState(null);
 
-  useEffect(() => {
-    FilesService.getFiles(dispatch);
-  }, [dispatch]);
+  // Yutuqni o'chirish
+  const deleteAchievementMutation = useMutation({
+    mutationFn: (achievementId) => axios.delete(`/file/${achievementId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["jobs", jobId]);
+      Swal.fire({
+        title: "Muvaffaqiyatli!",
+        text: "Yutuq muvaffaqiyatli o'chirildi",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        title: "Xatolik!",
+        text:
+          error.response?.data?.message ||
+          "Yutuqni o'chirishda xatolik yuz berdi",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    },
+  });
 
-  const getStatusBadge = (status) => {
-    switch (status) {
+  const handleDelete = (achievementId) => {
+    Swal.fire({
+      title: "Yutuqni o'chirish",
+      text: "Haqiqatan ham bu yutuqni o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ha, o'chirilsin!",
+      cancelButtonText: "Bekor qilish",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAchievementMutation.mutate(achievementId);
+      }
+    });
+  };
+
+  const getStatusBadge = () => {
+    let badgeClass = "";
+    let icon = null;
+    let text = "";
+
+    switch (item.status) {
       case "Tasdiqlandi":
-        return {
-          icon: <FiCheck className="mr-1" />,
-          variant: "success",
-          text: "Tasdiqlangan",
-        };
+        badgeClass = "bg-green-100 text-green-800";
+        icon = <FiCheck className="mr-1" />;
+        text = "Tasdiqlandi";
+        break;
       case "Tasdiqlanmadi":
-        return {
-          icon: <FiX className="mr-1" />,
-          variant: "danger",
-          text: "Rad etilgan",
-        };
+        badgeClass = "bg-red-100 text-red-800";
+        icon = <FiX className="mr-1" />;
+        text = "Rad etildi";
+        break;
       default:
-        return {
-          icon: <FiClock className="mr-1" />,
-          variant: "warning",
-          text: "Kutilmoqda",
-        };
+        badgeClass = "bg-yellow-100 text-yellow-800";
+        icon = <FiClock className="mr-1" />;
+        text = "Kutilmoqda";
     }
+
+    return { badgeClass, icon, text };
   };
 
-  const handleCreateAchievement = () => {
-    navigate("/achievement/create");
-  };
-
-  if (isLoading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "80vh" }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Yuklanmoqda...</span>
-        </div>
-      </div>
-    );
-  }
+  const statusBadge = getStatusBadge();
 
   return (
-    <div key={item._id} className="col-md-12">
-      <div className="card h-100">
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-start mb-3">
-            <h5 className="card-title mb-0">{item.achievments.title}</h5>
-            <Badge
-              bg={getStatusBadge(item.status).variant}
-              className="d-flex align-items-center"
-            >
-              {getStatusBadge(item.status).icon}
-              {getStatusBadge(item.status).text}
-            </Badge>
+    <div className="border bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-3">
+          <div>
+            <h3 className="font-semibold text-lg">{item.achievments.title}</h3>
+            <p className="text-gray-600 text-sm">{item.achievments.section}</p>
+            {item.achievments.rating && (
+              <p className="text-gray-600 text-sm mt-1">
+                {item.achievments.rating.ratingTitle} (
+                {item.achievments.rating.rating}/5)
+              </p>
+            )}
+          </div>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge.badgeClass}`}
+          >
+            {statusBadge.icon}
+            {statusBadge.text}
+          </span>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div>
+            {item.score && (
+              <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
+                <FiAward className="mr-1" />
+                Ball: {item.score}
+              </span>
+            )}
           </div>
 
-          <p className="card-text text-muted mb-3">
-            {item.achievments.section}
-          </p>
-
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <span className="badge bg-light text-dark me-2">
-                <FiAward className="me-1" />
-                {item.achievments.rating.rating}/5
-              </span>
-              <small className="text-muted">
-                {item.achievments.rating.ratingTitle}
-              </small>
-            </div>
-
-            <div className="file mt-2">
-              <a
-                onClick={() =>
-                  setViewingFile({
-                    fileUrl: item.fileUrl,
-                    fileName: item.fileName,
-                  })
-                }
-                className="flex cursor-pointer items-center gap-3"
-              >
-                <img src={FileImage} alt="" width={30} height={30} />
-                <p>Fileni ko'rish</p>
-              </a>
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() =>
+                setViewingFile({
+                  fileUrl: item.fileUrl,
+                  fileName: item.fileName,
+                })
+              }
+              className="flex items-center text-sm text-gray-600 hover:text-primary"
+            >
+              <FiEye className="mr-1" />
+              Faylni ko'rish
+            </button>
+            <button
+              onClick={() => handleDelete(item._id)}
+              className="flex items-center text-sm text-gray-600 hover:text-red-500"
+            >
+              <FiTrash2 className="mr-1" />
+              O'chirish
+            </button>
           </div>
         </div>
+
+        {item.resultMessage && (
+          <div
+            className={`mt-3 p-3 rounded-md border-l-4 ${
+              item.status === "Tasdiqlandi"
+                ? "bg-green-50 text-green-800 border-green-500"
+                : "bg-red-50 text-red-800 border-red-500"
+            }`}
+          >
+            <div className="flex items-start">
+              <div
+                className={`p-1 rounded-full mr-3 ${
+                  item.status === "Tasdiqlandi"
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                <FiMessageSquare className="text-sm" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm">{item.resultMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      {/* Fayl ko'ruvchi modal */}
+
       {viewingFile && (
         <FileViewerComponent
           fileUrl={viewingFile.fileUrl}
