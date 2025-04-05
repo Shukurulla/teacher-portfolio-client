@@ -220,6 +220,7 @@ const TeacherJobsPage = () => {
                       type="text"
                       name="workplace"
                       value={workplace}
+                      required
                       onChange={(e) => setWorkplace(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masalan: 15-sonli maktab"
