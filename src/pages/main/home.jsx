@@ -35,15 +35,20 @@ const TeacherJobsPage = () => {
   const getAchievementsCount = (jobId) => {
     return myFiles.filter((file) => file.from.job._id === jobId).length;
   };
-  const filteredAchievments = achievments.filter((item) =>
-    item.section.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const existingTitles = jobs.map((item) => item.title);
+  const filteredAchievments = achievments
+    .filter((item) => !existingTitles.includes(item.section))
+    .filter((item) =>
+      item.section.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   const handleAddJob = async () => {
     await JobService.createJob(dispatch, { title, workplace });
     setIsModalOpen(false);
     setTitle("");
     setWorkplace("");
   };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">

@@ -59,10 +59,13 @@ const JobPage = () => {
   const [jobTitle, setJobTitle] = useState("");
   const [workplace, setWorkplace] = useState("");
   const { achievments } = useSelector((state) => state.achievment);
+
   const dispatch = useDispatch();
   // Kasb ma'lumotlarini olish
   const fetchJobs = async () => {
     const response = await axios.get(`/job/${id}`);
+    console.log(response.data.data);
+
     return response.data.data;
   };
 
