@@ -33,6 +33,9 @@ const CreateBox = ({ state, setState, id }) => {
     await FilesService.postFiles(dispatch, formData);
     await AchievmentService.getAchievments(dispatch, id);
     setState({ state: false, value: {} });
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 
   return (

@@ -33,7 +33,13 @@ const TeacherJobsPage = () => {
   }, []);
 
   const getAchievementsCount = (jobId) => {
-    return myFiles.filter((file) => file.from.job._id === jobId).length;
+    const files = myFiles.filter((file) => file.from.job._id === jobId);
+    const length = files.length;
+    const totalScore = files
+      .map((item) => item.achievments.rating.rating)
+      .reduce((a, b) => a + b, 0);
+
+    return { length, totalScore };
   };
 
   const existingTitles = jobs.map((item) => item.title);
@@ -103,7 +109,10 @@ const TeacherJobsPage = () => {
                         <FiAward className="mr-3 text-yellow-500" />
                       </div>
                       <div className="w-[95%]">
-                        <span>{getAchievementsCount(job._id)} ta yutuq</span>
+                        <span>
+                          {getAchievementsCount(job._id).length} ta yutuq -{" "}
+                          {getAchievementsCount(job._id).totalScore} ball
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center text-gray-700">

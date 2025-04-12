@@ -9,13 +9,21 @@ import {
   FiX,
   FiTrash2,
   FiMessageSquare,
+  FiRefreshCcw,
 } from "react-icons/fi";
 import FileViewerComponent from "./FileViewerComponent";
 import FileImage from "../../public/file.jpg";
 import Swal from "sweetalert2";
+import CreateBox from "../pages/achievments/create.box";
+import { useSelector } from "react-redux";
 
 const AchievmentComponent = ({ item, jobId }) => {
   const queryClient = useQueryClient();
+  const [modalState, setModalState] = useState({
+    state: false,
+    value: {},
+  });
+  const { achievments, isLoading } = useSelector((state) => state.achievment);
   const [viewingFile, setViewingFile] = useState(null);
 
   // Yutuqni o'chirish
@@ -73,7 +81,7 @@ const AchievmentComponent = ({ item, jobId }) => {
       case "Tasdiqlanmadi":
         badgeClass = "bg-red-100 text-red-800";
         icon = <FiX className="mr-1" />;
-        text = "Rad etildi";
+        text = "Tasdiqlanmadi";
         break;
       default:
         badgeClass = "bg-yellow-100 text-yellow-800";
@@ -88,6 +96,13 @@ const AchievmentComponent = ({ item, jobId }) => {
 
   return (
     <div className="border bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      {modalState.state && (
+        <CreateBox
+          state={modalState.value}
+          setState={setModalState}
+          id={item.from.job._id}
+        />
+      )}
       <div className="p-4">
         <div className="flex justify-between items-start mb-3">
           <div>
@@ -100,12 +115,33 @@ const AchievmentComponent = ({ item, jobId }) => {
               </p>
             )}
           </div>
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge.badgeClass}`}
-          >
-            {statusBadge.icon}
-            {statusBadge.text}
-          </span>
+          <div>
+            <span
+              className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium ${statusBadge.badgeClass}`}
+            >
+              {statusBadge.icon}
+              {statusBadge.text}
+            </span>
+            {statusBadge.text == "Tasdiqlanmadi" ? (
+              <button
+                onClick={() =>
+                  setModalState({
+                    state: true,
+                    value: achievments
+                      .filter((c) => c.section == item.achievments.section)[0]
+                      .achievments.find(
+                        (c) => c.achievmet.title == item.achievments.title
+                      ).achievmet,
+                  })
+                }
+                className="ml-3 inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-200 text-blue-700"
+              >
+                <FiRefreshCcw /> <span className="ml-2">qayta jonatish</span>
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
 
         <div className="flex justify-between items-center">
