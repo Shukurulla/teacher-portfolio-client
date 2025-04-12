@@ -334,21 +334,6 @@ const JobPage = () => {
                   <div className="text-center py-8 text-gray-500">
                     <FiAward className="mx-auto text-3xl mb-3 text-gray-300" />
                     <p className="mb-4">Hozircha yutuqlar mavjud emas</p>
-                    <div className="flex justify-center">
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          navigate(
-                            `/achievment/create/${id}/section/${generateSlug(
-                              data?.job?.title
-                            )}`
-                          )
-                        }
-                        icon={<FiPlus className="mr-1" />}
-                      >
-                        Birinchi yutuqni qo'shish
-                      </Button>
-                    </div>
                   </div>
                 </BoxComponent>
               ) : (

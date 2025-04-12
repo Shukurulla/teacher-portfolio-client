@@ -7,7 +7,7 @@ import FilesService from "../../service/file.service";
 import FileViewerComponent from "../../components/FileViewerComponent";
 
 const AchievementsPage = () => {
-  const { myFiles, isLoading } = useSelector((state) => state.file);
+  const { myFiles = [], isLoading } = useSelector((state) => state.file); // default empty array
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [viewingFile, setViewingFile] = useState(null);
@@ -56,6 +56,8 @@ const AchievementsPage = () => {
     );
   }
 
+  const filesArray = Array.isArray(myFiles) ? myFiles : [];
+
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -65,7 +67,7 @@ const AchievementsPage = () => {
         </h1>
       </div>
 
-      {myFiles.length === 0 ? (
+      {filesArray.length === 0 ? (
         <div className="card text-center py-5">
           <div className="card-body">
             <FiAward size={48} className="text-muted mb-3" />
@@ -77,7 +79,7 @@ const AchievementsPage = () => {
         </div>
       ) : (
         <div className="row g-4">
-          {myFiles?.map((item) => {
+          {filesArray.map((item) => {
             const status = getStatusBadge(item.status);
             return (
               <div key={item._id} className="col-md-6">
@@ -85,7 +87,7 @@ const AchievementsPage = () => {
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <h5 className="card-title mb-0">
-                        {item.achievments.title}
+                        {item.achievments?.title}
                       </h5>
                       <Badge
                         bg={status.variant}
@@ -97,17 +99,17 @@ const AchievementsPage = () => {
                     </div>
 
                     <p className="card-text text-muted mb-3">
-                      {item.achievments.section}
+                      {item.achievments?.section}
                     </p>
 
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
                         <span className="badge bg-light text-dark me-2">
                           <FiAward className="me-1" />
-                          {item.achievments.rating.rating}/5
+                          {item.achievments?.rating?.rating}/5
                         </span>
                         <small className="text-muted">
-                          {item.achievments.rating.ratingTitle}
+                          {item.achievments?.rating?.ratingTitle}
                         </small>
                       </div>
 
