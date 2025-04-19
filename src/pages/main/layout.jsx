@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 const Layout = ({ activePage }) => {
   const navigate = useNavigate();
+  const path = window.location.pathname;
+
   return (
     <div>
       <Navbar />
@@ -14,12 +16,16 @@ const Layout = ({ activePage }) => {
         </div>
         <div className="col-lg-10 p-0 col-md-8 col-sm-12">
           <div className=" relative bg-gray-50 overflow-y-scroll h-[90vh]">
-            <button
-              className="py-3 px-5 text-blue-600"
-              onClick={() => navigate(-1)}
-            >
-              <i className="bi bi-arrow-left"></i> orqaga
-            </button>
+            {path == "/" ? (
+              ""
+            ) : (
+              <button
+                className="py-3 px-5 text-blue-600"
+                onClick={() => navigate(-1)}
+              >
+                <i className="bi bi-arrow-left"></i> orqaga
+              </button>
+            )}
             {activePage}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import UserService from "../../service/user.service";
@@ -9,19 +9,34 @@ const RegisterPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const { isLoading } = useSelector((state) => state.user);
+  const [regions, setRegions] = useState([]);
+  const [province, setProvince] = useState("");
+
+  useEffect(() => {
+    const provinces = async () => {
+      const provinces = await UserService.getProvinces();
+      setRegions(provinces.data);
+      return provinces;
+    };
+    provinces();
+  }, []);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const postHandler = async (e) => {
     e.preventDefault();
+    console.log(province);
+
     const userSchema = {
       firstName,
       lastName,
       phone,
       password,
+      province,
     };
     await UserService.postUser(dispatch, userSchema, navigate);
+    window.location.reload();
   };
 
   return (
@@ -68,6 +83,17 @@ const RegisterPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </div>
+        <div className="my-2">
+          <select
+            value={province}
+            onChange={(e) => setProvince(e.target.value)}
+            className="form-control"
+          >
+            {regions.map((item) => (
+              <option value={item.title}>{item.title}</option>
+            ))}
+          </select>
         </div>
 
         <button

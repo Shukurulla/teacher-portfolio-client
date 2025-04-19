@@ -64,5 +64,13 @@ const UserService = {
       dispatch(getUserFailure());
     }
   },
+  async getProvinces() {
+    try {
+      const { data } = await axios.get("/teacher/regions");
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 export default UserService;

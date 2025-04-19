@@ -73,13 +73,6 @@ const CreateAchievment = () => {
     <div className="p-2 sm:p-4">
       <BoxComponent>
         <div className="flex items-center justify-between mb-6 pb-2 border-b">
-          <div
-            onClick={() => navigate(-1)}
-            className="flex cursor-pointer hover:bg-blue-200 px-3  rounded-lg transition-[0.5s] py-2"
-          >
-            <FiArrowLeft size={24} className="text-primary mr-3" />
-            <span className="text-24 font-semibold text-primary ">Orqaga</span>
-          </div>
           <div className="flex items-center">
             <FiAward className="text-primary mr-3" size={24} />
             <h1 className="text-2xl  font-semibold text-gray-800">

@@ -34,7 +34,7 @@ const AchievementsPage = () => {
         return {
           icon: <FiClock className="mr-1" />,
           variant: "warning",
-          text: "Kutilmoqda",
+          text: "Jarayonda",
         };
     }
   };
