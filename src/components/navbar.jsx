@@ -66,13 +66,13 @@ const Navbar = () => {
           ) : (
             <div className="flex space-x-3">
               <Link
-                to="/login"
+                to="/auth/login"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors"
               >
                 Kirish
               </Link>
               <Link
-                to="/register"
+                to="/auth/register"
                 className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary-dark transition-colors"
               >
                 Ro'yxatdan o'tish
