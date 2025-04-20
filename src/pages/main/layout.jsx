@@ -16,7 +16,7 @@ const Layout = ({ activePage }) => {
         </div>
         <div className="col-lg-10 p-0 col-md-8 col-sm-12">
           <div className=" relative bg-gray-50 overflow-y-scroll h-[90vh]">
-            {path == "/" ? (
+            {path == "/" || path == "/achievments" || path == "/profile" ? (
               ""
             ) : (
               <button

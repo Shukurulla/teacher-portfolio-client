@@ -11,24 +11,35 @@ const CreateBox = ({ state, setState, id }) => {
   const [rating, setRating] = useState(state.ratings[0]?.about || "");
   const { isLoading } = useSelector((state) => state.file);
   const { user } = useSelector((state) => state.user);
+  const maxFiles = state.ratings.length;
 
   const changeFiles = (e) => {
-    const selectedFiles = Array.from(e.target.files);
+    const selectedFile = e.target.files[0]; // Get only the first file
 
-    // Limit the number of files to the number of ratings
-    const maxFiles = state.ratings.length;
-    const limitedFiles = selectedFiles.slice(0, maxFiles);
+    if (!selectedFile) return;
 
-    setFiles(limitedFiles);
+    // Check if we've reached the maximum number of files
+    if (files.length >= maxFiles) {
+      alert(`You can only upload ${maxFiles} files for this achievement`);
+      return;
+    }
 
-    // Create previews for the files
-    const previews = limitedFiles.map((file) => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: URL.createObjectURL(file),
-    }));
-    setFilePreviews(previews);
+    // Add the new file to the existing files
+    const newFiles = [...files, selectedFile];
+    setFiles(newFiles);
+
+    // Create preview for the new file
+    const newPreview = {
+      name: selectedFile.name,
+      size: selectedFile.size,
+      type: selectedFile.type,
+      url: URL.createObjectURL(selectedFile),
+    };
+
+    setFilePreviews([...filePreviews, newPreview]);
+
+    // Reset the input value to allow selecting the same file again if needed
+    e.target.value = null;
   };
 
   const removeFile = (index) => {
@@ -77,9 +88,9 @@ const CreateBox = ({ state, setState, id }) => {
 
       // Clean up object URLs
       filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 300);
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     } catch (error) {
       console.error("Error submitting files:", error);
     }
@@ -97,22 +108,21 @@ const CreateBox = ({ state, setState, id }) => {
                   type="file"
                   onChange={changeFiles}
                   className="form-control mt-1"
-                  multiple
-                  required
-                  max={state.ratings.length}
+                  disabled={files.length >= maxFiles}
+                  required={files.length === 0}
                 />
               </label>
               <p className="text-xs text-gray-500">
-                Siz {state.ratings.length} ta file jonata olishingiz mumkin
+                {files.length < maxFiles
+                  ? `You can upload ${maxFiles - files.length} more file(s)`
+                  : "Siz boshqa file qosha olmaysiz"}
               </p>
             </div>
 
             {/* File previews */}
             {filePreviews.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-sm font-medium mb-2">
-                  Yutuq faylini tanlang:
-                </h3>
+                <h3 className="text-sm font-medium mb-2">Selected files:</h3>
                 <div className="space-y-2">
                   {filePreviews.map((preview, index) => (
                     <div
@@ -160,14 +170,14 @@ const CreateBox = ({ state, setState, id }) => {
                 disabled={isLoading}
                 className="bg-secondary text-[15px] px-4 py-2 rounded-md text-white hover:bg-secondary-dark transition"
               >
-                Bekor qilish
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
                 className="bg-primary px-4 py-2 text-[15px] rounded-md text-white hover:bg-primary-dark transition disabled:opacity-50"
               >
-                {isLoading ? "Yuklanmoqda..." : "Yuborish"}
+                {isLoading ? "Loading..." : "Submit"}
               </button>
             </div>
           </form>
