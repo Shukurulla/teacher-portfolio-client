@@ -25,6 +25,8 @@ const Profile = () => {
 
   const dispatch = useDispatch();
 
+  console.log(user);
+
   useEffect(() => {
     UserService.getUser(dispatch);
     FilesService.getFiles(dispatch);

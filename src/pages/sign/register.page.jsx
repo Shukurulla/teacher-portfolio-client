@@ -10,7 +10,10 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const { isLoading } = useSelector((state) => state.user);
   const [regions, setRegions] = useState([]);
-  const [province, setProvince] = useState("");
+  const [province, setProvince] = useState({
+    title: "Toshkent shahri",
+    region: "Toshkent",
+  });
 
   useEffect(() => {
     const provinces = async () => {
@@ -35,8 +38,9 @@ const RegisterPage = () => {
       password,
       province,
     };
+    console.log(userSchema);
+
     await UserService.postUser(dispatch, userSchema, navigate);
-    window.location.reload();
   };
 
   return (
@@ -86,12 +90,14 @@ const RegisterPage = () => {
         </div>
         <div className="my-2">
           <select
-            value={province}
-            onChange={(e) => setProvince(e.target.value)}
+            value={JSON.stringify(province)}
+            onChange={(e) => setProvince(JSON.parse(e.target.value))}
             className="form-control"
           >
-            {regions.map((item) => (
-              <option value={item.title}>{item.title}</option>
+            {regions.map((item, index) => (
+              <option key={index} value={JSON.stringify(item)}>
+                {item.title}
+              </option>
             ))}
           </select>
         </div>

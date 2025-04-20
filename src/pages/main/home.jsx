@@ -54,6 +54,17 @@ const TeacherJobsPage = () => {
     setTitle("");
     setWorkplace("");
   };
+  const rating = myFiles
+    .filter((c) => c.status == "Tasdiqlandi")
+    .map((c) => c.files.map((item) => item.rating).reduce((a, b) => b + a, 0))
+    .reduce((a, b) => b + a, 0);
+  const count = myFiles.filter((c) => c.status == "Tasdiqlandi").length;
+  console.log(
+    myFiles
+      .filter((c) => c.status == "Tasdiqlandi")
+      .map((c) => c.files.map((item) => item.rating).reduce((a, b) => b + a, 0))
+      .reduce((a, b) => b + a, 0)
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -110,8 +121,8 @@ const TeacherJobsPage = () => {
                       </div>
                       <div className="w-[95%]">
                         <span>
-                          {getAchievementsCount(job._id).length} ta yutuq -{" "}
-                          {getAchievementsCount(job._id).totalScore} ball
+                          {count} ta tasdiqlangan yutuq - {rating}
+                          ball
                         </span>
                       </div>
                     </div>
