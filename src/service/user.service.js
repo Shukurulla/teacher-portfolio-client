@@ -15,7 +15,7 @@ const UserService = {
         localStorage.setItem("teacher-jwt", data.token);
       }
       dispatch(getUserSuccess(data.data));
-      // navigate("/");
+      navigate("/");
       setTimeout(() => {
         return toast.success("Registratsiyadan muaffaqqiyatli o'tdingiz");
       }, 200);
