@@ -114,8 +114,10 @@ const CreateBox = ({ state, setState, id }) => {
               </label>
               <p className="text-xs text-gray-500">
                 {files.length < maxFiles
-                  ? `You can upload ${maxFiles - files.length} more file(s)`
-                  : "Siz boshqa file qosha olmaysiz"}
+                  ? `Siz ${
+                      maxFiles - files.length
+                    } tadan ortiq file qo'sha olmaysiz`
+                  : "Siz boshqa file qo'sha olmaysiz"}
               </p>
             </div>
 
