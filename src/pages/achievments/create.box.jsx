@@ -95,7 +95,7 @@ const CreateBox = ({ state, setState, id }) => {
       console.error("Error submitting files:", error);
     }
   };
-
+  // Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "job"
   return (
     <div className="w-100 h-[100vh] bg-[#504f4f6c] fixed top-0 flex items-center py-5 justify-center left-0 z-50">
       <div className="w-[80%] md:w-[50%] max-h-[90vh] overflow-y-auto">

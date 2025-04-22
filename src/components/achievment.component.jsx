@@ -100,7 +100,7 @@ const AchievmentComponent = ({ item, jobId }) => {
         <CreateBox
           state={modalState.value}
           setState={setModalState}
-          id={item.from.job._id}
+          id={item.from.job}
         />
       )}
       <div className="p-4">
@@ -205,8 +205,7 @@ const AchievmentComponent = ({ item, jobId }) => {
 
       {viewingFile && (
         <FileViewerComponent
-          fileUrl={viewingFile.fileUrl}
-          fileName={viewingFile.fileName}
+          files={item.files}
           onClose={() => setViewingFile(null)}
         />
       )}

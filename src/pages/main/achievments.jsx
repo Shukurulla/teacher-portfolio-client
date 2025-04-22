@@ -5,6 +5,8 @@ import { FiPlus, FiAward, FiEye, FiClock, FiCheck, FiX } from "react-icons/fi";
 import { Button, Badge } from "react-bootstrap";
 import FilesService from "../../service/file.service";
 import FileViewerComponent from "../../components/FileViewerComponent";
+import AchievmentComponent from "../../components/achievment.component";
+import AchievmentService from "../../service/achievment.service";
 
 const AchievementsPage = () => {
   const { myFiles = [], isLoading } = useSelector((state) => state.file); // default empty array
@@ -14,6 +16,7 @@ const AchievementsPage = () => {
 
   useEffect(() => {
     FilesService.getFiles(dispatch);
+    AchievmentService.getAchievments(dispatch);
   }, [dispatch]);
 
   const getStatusBadge = (status) => {
@@ -37,10 +40,6 @@ const AchievementsPage = () => {
           text: "Jarayonda",
         };
     }
-  };
-
-  const handleCreateAchievement = () => {
-    navigate("/achievement/create");
   };
 
   if (isLoading) {
@@ -79,59 +78,11 @@ const AchievementsPage = () => {
         </div>
       ) : (
         <div className="row g-4">
-          {filesArray.map((item) => {
+          {myFiles.map((item) => {
             const status = getStatusBadge(item.status);
-            return (
-              <div key={item._id} className="col-md-6">
-                <div className="card h-100">
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <h5 className="card-title mb-0">
-                        {item.achievments?.title}
-                      </h5>
-                      <Badge
-                        bg={status.variant}
-                        className="d-flex align-items-center"
-                      >
-                        {status.icon}
-                        {status.text}
-                      </Badge>
-                    </div>
+            console.log(item);
 
-                    <p className="card-text text-muted mb-3">
-                      {item.achievments?.section}
-                    </p>
-
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <span className="badge bg-light text-dark me-2">
-                          <FiAward className="me-1" />
-                          {item.achievments?.rating?.rating}/5
-                        </span>
-                        <small className="text-muted">
-                          {item.achievments?.rating?.ratingTitle}
-                        </small>
-                      </div>
-
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() =>
-                          setViewingFile({
-                            fileUrl: item.fileUrl,
-                            fileName: item.fileName,
-                          })
-                        }
-                        className="d-flex align-items-center"
-                      >
-                        <FiEye className="me-1" />
-                        Ko'rish
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
+            return <AchievmentComponent item={item} jobId={item.from.job} />;
           })}
         </div>
       )}
