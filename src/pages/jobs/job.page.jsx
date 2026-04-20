@@ -163,10 +163,12 @@ const JobPage = () => {
   const totalScore =
     data?.files
       ?.filter((f) => f.status === "Tasdiqlandi")
-      .map((item) =>
-        item.files.map((item) => item.rating).reduce((a, b) => b + a, 0)
-      )
-      .reduce((a, b) => b + a, 0) || 0;
+      .reduce(
+        (sum, item) =>
+          sum +
+          item.files.reduce((s, f) => s + (f.rating?.rating || 0), 0),
+        0
+      ) || 0;
 
   return (
     <div className="py-4">

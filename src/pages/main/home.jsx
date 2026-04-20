@@ -35,9 +35,12 @@ const TeacherJobsPage = () => {
   const getAchievementsCount = (jobId) => {
     const files = myFiles.filter((file) => file.from.job._id === jobId);
     const length = files.length;
-    const totalScore = files
-      .map((item) => item.achievments.rating.rating)
-      .reduce((a, b) => a + b, 0);
+    const totalScore = files.reduce(
+      (sum, item) =>
+        sum +
+        item.files.reduce((s, f) => s + (f.rating?.rating || 0), 0),
+      0
+    );
 
     return { length, totalScore };
   };
@@ -56,15 +59,11 @@ const TeacherJobsPage = () => {
   };
   const rating = myFiles
     .filter((c) => c.status == "Tasdiqlandi")
-    .map((c) => c.files.map((item) => item.rating).reduce((a, b) => b + a, 0))
-    .reduce((a, b) => b + a, 0);
+    .map((c) =>
+      c.files.reduce((sum, item) => sum + (item.rating?.rating || 0), 0)
+    )
+    .reduce((a, b) => a + b, 0);
   const count = myFiles.filter((c) => c.status == "Tasdiqlandi").length;
-  console.log(
-    myFiles
-      .filter((c) => c.status == "Tasdiqlandi")
-      .map((c) => c.files.map((item) => item.rating).reduce((a, b) => b + a, 0))
-      .reduce((a, b) => b + a, 0)
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
