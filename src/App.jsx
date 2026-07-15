@@ -15,6 +15,10 @@ import EditProfile from "./pages/edit-profil/editProfile";
 import JobPage from "./pages/jobs/job.page";
 import Profile from "./pages/profile/profile";
 import AchievementsPage from "./pages/main/achievments";
+import SpecialPage from "./pages/special/special.page";
+import MalakaPage from "./pages/malaka/malaka.page";
+import ForUsersPage from "./pages/info/foydalanuvchilar.page";
+import ContactPage from "./pages/info/boglanish.page";
 
 const App = () => {
   const navigate = useNavigate();
@@ -56,6 +60,16 @@ const App = () => {
         />
         <Route path="/job/:id" element={<Layout activePage={<JobPage />} />} />
         <Route path="/profile" element={<Layout activePage={<Profile />} />} />
+        <Route path="/special" element={<Layout activePage={<SpecialPage />} />} />
+        <Route path="/malaka" element={<Layout activePage={<MalakaPage />} />} />
+        <Route
+          path="/foydalanuvchilar"
+          element={<Layout activePage={<ForUsersPage />} />}
+        />
+        <Route
+          path="/boglanish"
+          element={<Layout activePage={<ContactPage />} />}
+        />
       </Routes>
     </>
   );

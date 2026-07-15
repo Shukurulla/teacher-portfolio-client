@@ -1,6 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import BoxComponent from "../../components/box.component";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import FilesService from "../../service/file.service";
 import AchievmentService from "../../service/achievment.service";
 
@@ -95,97 +109,156 @@ const CreateBox = ({ state, setState, id }) => {
       console.error("Error submitting files:", error);
     }
   };
-  // Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "job"
-  return (
-    <div className="w-100 h-[100vh] bg-[#504f4f6c] fixed top-0 flex items-center py-5 justify-center left-0 z-50">
-      <div className="w-[80%] md:w-[50%] max-h-[90vh] overflow-y-auto">
-        <BoxComponent>
-          <h1 className="font-semibold text-lg mb-4">{state.title}</h1>
-          <form onSubmit={submitHandler}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                <input
-                  type="file"
-                  onChange={changeFiles}
-                  className="form-control mt-1"
-                  disabled={files.length >= maxFiles}
-                  required={files.length === 0}
-                />
-              </label>
-              <p className="text-xs text-gray-500">
-                {files.length < maxFiles
-                  ? `Siz ${
-                      maxFiles - files.length
-                    } tadan ortiq file qo'sha olmaysiz`
-                  : "Siz boshqa file qo'sha olmaysiz"}
-              </p>
-            </div>
 
-            {/* File previews */}
-            {filePreviews.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium mb-2">Selected files:</h3>
-                <div className="space-y-2">
-                  {filePreviews.map((preview, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 border rounded"
+  const closeModal = () => setState({ value: state, state: false });
+
+  return (
+    <Dialog
+      open={Boolean(state)}
+      onClose={closeModal}
+      fullWidth
+      maxWidth="sm"
+      scroll="paper"
+    >
+      <Box component="form" onSubmit={submitHandler}>
+        <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>{state.title}</DialogTitle>
+
+        <DialogContent dividers>
+          <Button
+            component="label"
+            variant="outlined"
+            fullWidth
+            startIcon={<UploadFileRoundedIcon />}
+            disabled={files.length >= maxFiles}
+            sx={{ justifyContent: "flex-start", py: 1.25 }}
+          >
+            {files.length >= maxFiles
+              ? "Fayllar limitiga yetdingiz"
+              : "Hujjat tanlash"}
+            <input
+              hidden
+              type="file"
+              onChange={changeFiles}
+              disabled={files.length >= maxFiles}
+            />
+          </Button>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", mt: 1 }}
+          >
+            {files.length < maxFiles
+              ? `Siz ${
+                  maxFiles - files.length
+                } tadan ortiq file qo'sha olmaysiz`
+              : "Siz boshqa file qo'sha olmaysiz"}
+          </Typography>
+
+          {/* File previews */}
+          {filePreviews.length > 0 && (
+            <Box sx={{ mt: 2.5 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Selected files:
+              </Typography>
+              <Stack spacing={1}>
+                {filePreviews.map((preview, index) => (
+                  <Stack
+                    key={index}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={1}
+                    sx={{
+                      p: 1,
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1.5}
+                      sx={{ minWidth: 0 }}
                     >
-                      <div className="flex items-center">
-                        {preview.type.startsWith("image/") ? (
-                          <img
-                            src={preview.url}
-                            alt="Preview"
-                            className="w-10 h-10 object-cover mr-2"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 bg-gray-200 flex items-center justify-center mr-2">
-                            <span className="text-xs">File</span>
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-sm truncate w-40">
-                            {preview.name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {(preview.size / 1024).toFixed(2)} KB
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="text-red-500 hover:text-red-700"
+                      {preview.type.startsWith("image/") ? (
+                        <Box
+                          component="img"
+                          src={preview.url}
+                          alt="Preview"
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            objectFit: "cover",
+                            borderRadius: 1.5,
+                            flexShrink: 0,
+                          }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 1.5,
+                            bgcolor: alpha("#2563eb", 0.12),
+                            color: "primary.main",
+                            display: "grid",
+                            placeItems: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <DescriptionRoundedIcon fontSize="small" />
+                        </Box>
+                      )}
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="body2" noWrap sx={{ maxWidth: 220 }}>
+                          {preview.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {(preview.size / 1024).toFixed(2)} KB
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => removeFile(index)}
+                      aria-label="remove file"
+                    >
+                      <Box
+                        component="span"
+                        sx={{ fontSize: 20, lineHeight: 1, fontWeight: 700 }}
                       >
                         ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                      </Box>
+                    </IconButton>
+                  </Stack>
+                ))}
+              </Stack>
+            </Box>
+          )}
+        </DialogContent>
 
-            <div className="flex gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => setState({ value: state, state: false })}
-                disabled={isLoading}
-                className="bg-secondary text-[15px] px-4 py-2 rounded-md text-white hover:bg-secondary-dark transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-primary px-4 py-2 text-[15px] rounded-md text-white hover:bg-primary-dark transition disabled:opacity-50"
-              >
-                {isLoading ? "Loading..." : "Submit"}
-              </button>
-            </div>
-          </form>
-        </BoxComponent>
-      </div>
-    </div>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            type="button"
+            onClick={closeModal}
+            disabled={isLoading}
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isLoading}
+            startIcon={<CheckRoundedIcon />}
+          >
+            {isLoading ? "Loading..." : "Submit"}
+          </Button>
+        </DialogActions>
+      </Box>
+    </Dialog>
   );
 };
 

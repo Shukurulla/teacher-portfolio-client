@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import BoxComponent from "../../components/box.component";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Stack,
+  LinearProgress,
+  Skeleton,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import UploadFileRoundedIcon from "@mui/icons-material/UploadFileRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import AchievmentService from "../../service/achievment.service";
 import { generateSlug } from "../../utils/generateSlug";
+import { PageHeader, SoftChip } from "../../components/ui";
 import CreateBox from "./create.box";
-import {
-  FiChevronRight,
-  FiAward,
-  FiCheckCircle,
-  FiBarChart2,
-  FiArrowDownLeft,
-  FiArrowLeft,
-} from "react-icons/fi";
 
 const CreateAchievmetSection = () => {
   const { achievments, isLoading } = useSelector((state) => state.achievment);
@@ -61,138 +68,181 @@ const CreateAchievmetSection = () => {
   };
 
   const progress = calculateProgress();
+  const percentage =
+    progress.total > 0
+      ? Math.round((progress.completed / progress.total) * 100)
+      : 0;
 
-  return isLoading ? (
-    <div className="p-4">
-      <BoxComponent>
-        <div className="space-y-4">
+  if (isLoading) {
+    return (
+      <Box>
+        <Stack spacing={2}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="p-4 border rounded-lg animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
+            <Card key={i}>
+              <CardContent>
+                <Skeleton variant="text" width="40%" height={28} />
+                <Skeleton variant="text" width="80%" />
+                <Skeleton variant="text" width="55%" />
+              </CardContent>
+            </Card>
           ))}
-        </div>
-      </BoxComponent>
-    </div>
-  ) : (
-    <div className="p-4">
-      {sectionAchievments && (
-        <div>
-          {modalState.state && (
-            <CreateBox
-              state={modalState.value}
-              setState={setModalState}
-              id={id}
-            />
-          )}
+        </Stack>
+      </Box>
+    );
+  }
 
-          {/* Section Header */}
-          <div className="flex items-center justify-between mb-6 pb-2 border-b">
-            <div className="flex items-center">
-              <FiAward className="text-primary mr-3" size={24} />
-              <h1 className="text-2xl  font-semibold text-gray-800">
-                {sectionAchievments.section}
-              </h1>
-            </div>
-          </div>
+  if (!sectionAchievments) return <Box />;
 
-          {/* Progress Summary */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center">
-                <FiBarChart2 className="text-primary mr-2" size={20} />
-                <span className="font-medium">
-                  {progress.completed} / {progress.total} yutuq bajarildi
-                </span>
-              </div>
-              <div className="flex items-center">
-                <FiBarChart2 className="text-primary mr-2" size={20} />
-                <span className="font-medium">
-                  {progress.earnedPoints} / {progress.totalPoints} ball
-                  to'plandi
-                </span>
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 mt-3">
-              <div
-                className="h-2.5 rounded-full bg-primary"
-                style={{
-                  width: `${
-                    progress.total > 0
-                      ? Math.round((progress.completed / progress.total) * 100)
-                      : 0
-                  }%`,
-                }}
-              ></div>
-            </div>
-          </div>
+  return (
+    <Box>
+      {modalState.state && (
+        <CreateBox state={modalState.value} setState={setModalState} id={id} />
+      )}
 
-          {/* Achievements List */}
-          <div className="space-y-4">
-            {sectionAchievments.achievments.map((item) => (
-              <BoxComponent key={item.achievmet.id}>
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-3">
-                      <FiAward
-                        className={`mr-3 ${
-                          item.exist ? "text-green-500" : "text-primary"
-                        }`}
-                        size={20}
-                      />
-                      <h2 className="text-lg font-semibold text-gray-800">
+      <PageHeader
+        title={sectionAchievments.section}
+        action={
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackRoundedIcon />}
+            onClick={() => navigate(`/achievment/create/${id}`)}
+          >
+            Orqaga
+          </Button>
+        }
+      />
+
+      {/* Progress Summary */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            gap={1.5}
+            mb={2}
+          >
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {progress.completed} / {progress.total} yutuq bajarildi
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, color: "primary.main" }}
+            >
+              {progress.earnedPoints} / {progress.totalPoints} ball to'plandi
+            </Typography>
+          </Stack>
+          <LinearProgress
+            variant="determinate"
+            value={percentage}
+            sx={{ height: 8, borderRadius: 5 }}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Achievements List */}
+      <Stack spacing={2}>
+        {sectionAchievments.achievments.map((item) => {
+          const accent = item.exist ? "#16a34a" : "#2563eb";
+
+          return (
+            <Card key={item.achievmet.id}>
+              <CardContent>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  justifyContent="space-between"
+                  gap={2}
+                >
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1.5}
+                      mb={1.5}
+                    >
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 2.5,
+                          display: "grid",
+                          placeItems: "center",
+                          bgcolor: alpha(accent, 0.12),
+                          color: accent,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.exist ? (
+                          <CheckRoundedIcon />
+                        ) : (
+                          <DescriptionRoundedIcon />
+                        )}
+                      </Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                         {item.achievmet.title}
-                      </h2>
-                    </div>
+                      </Typography>
+                    </Stack>
 
-                    <div className="pl-9">
-                      <h3 className="font-medium mb-2">Baholar:</h3>
-                      <ul className="space-y-2">
+                    <Box sx={{ pl: { sm: 6.5 } }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 600, mb: 1 }}
+                      >
+                        Baholar:
+                      </Typography>
+                      <Stack spacing={0.75}>
                         {item.achievmet.ratings.map((rating, index) => (
-                          <li key={index} className="flex items-center">
-                            <span className="font-semibold w-16">
+                          <Stack key={index} direction="row" spacing={1}>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, minWidth: 64, flexShrink: 0 }}
+                            >
                               {rating.rating} ball
-                            </span>
-                            <span className="text-gray-600">
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
                               - {rating.about}
-                            </span>
-                          </li>
+                            </Typography>
+                          </Stack>
                         ))}
-                      </ul>
-                    </div>
-                  </div>
+                      </Stack>
+                    </Box>
+                  </Box>
 
-                  <div className="flex flex-col items-end gap-3">
+                  <Box
+                    sx={{
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      justifyContent: "flex-end",
+                    }}
+                  >
                     {item.exist ? (
-                      <div className="flex items-center bg-green-50 text-green-800 px-3 py-1 rounded-full text-sm">
-                        <FiCheckCircle className="mr-1" size={14} />
-                        <span>Yuborilgan</span>
-                        <span className="ml-2 text-xs text-gray-500">
+                      <Stack alignItems="flex-end" spacing={0.5}>
+                        <SoftChip label="Yuborilgan" color="#16a34a" />
+                        <Typography variant="caption" color="text.secondary">
                           {new Date(
                             item.achievmet.updatedAt
                           ).toLocaleDateString()}
-                        </span>
-                      </div>
+                        </Typography>
+                      </Stack>
                     ) : (
-                      <button
+                      <Button
+                        variant="contained"
+                        startIcon={<UploadFileRoundedIcon />}
                         onClick={() =>
                           setModalState({ state: true, value: item.achievmet })
                         }
-                        className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md text-sm flex items-center"
                       >
                         Yuborish
-                      </button>
+                      </Button>
                     )}
-                  </div>
-                </div>
-              </BoxComponent>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </Stack>
+    </Box>
   );
 };
 

@@ -1,16 +1,22 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import BoxComponent from "../../components/box.component";
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Stack,
+  LinearProgress,
+  Skeleton,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import AchievmentService from "../../service/achievment.service";
 import { generateSlug } from "../../utils/generateSlug";
-import {
-  FiChevronRight,
-  FiAward,
-  FiCheckCircle,
-  FiBarChart2,
-  FiArrowLeft,
-} from "react-icons/fi";
+import { PageHeader, SoftChip, EmptyState } from "../../components/ui";
 
 const CreateAchievment = () => {
   const { achievments, isLoading } = useSelector((state) => state.achievment);
@@ -55,124 +61,139 @@ const CreateAchievment = () => {
     return { completed, total, percentage, totalPoints, earnedPoints };
   };
 
-  return isLoading ? (
-    <div className="p-2 sm:p-4">
-      <BoxComponent>
-        <div className="grid gap-3 sm:gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-3 sm:p-4 border rounded-lg animate-pulse">
-              <div className="h-5 sm:h-6 bg-gray-200 rounded w-3/4 mb-2 sm:mb-3"></div>
-              <div className="h-3 sm:h-4 bg-gray-200 rounded w-full mb-1 sm:mb-2"></div>
-              <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          ))}
-        </div>
-      </BoxComponent>
-    </div>
-  ) : (
-    <div className="p-2 sm:p-4">
-      <BoxComponent>
-        <div className="flex items-center justify-between mb-6 pb-2 border-b">
-          <div className="flex items-center">
-            <FiAward className="text-primary mr-3" size={24} />
-            <h1 className="text-2xl  font-semibold text-gray-800">
-              Yutuq bo'limlari
-            </h1>
-          </div>
-        </div>
+  return (
+    <Box>
+      <PageHeader
+        title="Yutuq bo'limlari"
+        subtitle="Bo'limni tanlab, tegishli yutuqlaringiz uchun tasdiqlovchi hujjatlarni yuklang"
+      />
 
-        <div className="grid gap-3 sm:gap-4">
+      {isLoading ? (
+        <Stack spacing={2}>
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardContent>
+                <Skeleton variant="text" width="45%" height={28} />
+                <Skeleton variant="text" width="65%" />
+                <Skeleton
+                  variant="rounded"
+                  height={8}
+                  sx={{ mt: 1.5, borderRadius: 5 }}
+                />
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      ) : achievments?.length === 0 ? (
+        <EmptyState
+          icon={<DescriptionRoundedIcon />}
+          title="Bo'limlar topilmadi"
+          description="Ushbu yo'nalish uchun yutuq bo'limlari hozircha mavjud emas"
+        />
+      ) : (
+        <Stack spacing={2}>
           {achievments?.map((item, index) => {
             const progress = calculateSectionProgress(item);
             const isComplete = progress.percentage === 100;
-            console.log(progress);
+            const accent = isComplete ? "#16a34a" : "#2563eb";
 
             return (
-              <div
+              <Card
                 key={index}
-                onClick={() =>
-                  navigate(
-                    `/achievment/create/${id}/section/${generateSlug(
-                      item.section
-                    )}`
-                  )
-                }
-                className={`p-3 sm:p-4 rounded-lg border transition-all duration-200 cursor-pointer group
-                  ${
-                    isComplete
-                      ? "border-green-100 bg-green-50"
-                      : "border-gray-200 hover:border-primary hover:bg-blue-50"
-                  }
-                `}
+                sx={{
+                  transition: "box-shadow .15s ease, transform .15s ease",
+                  "&:hover": {
+                    boxShadow: "0 8px 24px rgba(15,23,42,0.08)",
+                    transform: "translateY(-2px)",
+                  },
+                }}
               >
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <div className="flex flex-col sm:flex-row sm:items-center mb-2 gap-2">
-                      <h2 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
-                        <FiAward
-                          className={`mr-2 ${
-                            isComplete ? "text-green-500" : "text-primary"
-                          }`}
-                          size={16}
-                        />
-                        {item.section}
-                      </h2>
-                      {isComplete && (
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full flex items-center">
-                          <FiCheckCircle className="mr-1" size={12} />
-                          Yakunlangan
-                        </span>
+                <CardActionArea
+                  onClick={() =>
+                    navigate(
+                      `/achievment/create/${id}/section/${generateSlug(
+                        item.section
+                      )}`
+                    )
+                  }
+                  sx={{ p: { xs: 2, sm: 2.5 } }}
+                >
+                  <Stack direction="row" alignItems="flex-start" spacing={2}>
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 2.5,
+                        display: "grid",
+                        placeItems: "center",
+                        bgcolor: alpha(accent, 0.12),
+                        color: accent,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {isComplete ? (
+                        <CheckRoundedIcon />
+                      ) : (
+                        <DescriptionRoundedIcon />
                       )}
-                    </div>
+                    </Box>
 
-                    <div className="flex flex-col xs:flex-row xs:items-center xs:gap-6 gap-2 text-xs sm:text-sm mb-2 sm:mb-3 pl-6">
-                      <div className="flex items-center">
-                        <FiBarChart2 className="text-gray-400 mr-1" size={12} />
-                        <span
-                          className={`font-medium ${
-                            isComplete ? "text-green-600" : "text-primary"
-                          }`}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        flexWrap="wrap"
+                        gap={1}
+                        mb={1}
+                      >
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                          {item.section}
+                        </Typography>
+                        {isComplete && (
+                          <SoftChip label="Yakunlangan" color="#16a34a" />
+                        )}
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        flexWrap="wrap"
+                        rowGap={0.5}
+                        columnGap={3}
+                        mb={1.5}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600, color: accent }}
                         >
                           {progress.completed}/{progress.total} yutuq
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <FiBarChart2 className="text-gray-400 mr-1" size={12} />
-                        <span
-                          className={`font-medium ${
-                            isComplete ? "text-green-600" : "text-primary"
-                          }`}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600, color: accent }}
                         >
                           {progress.earnedPoints}/{progress.totalPoints} ball
-                        </span>
-                      </div>
-                    </div>
+                        </Typography>
+                      </Stack>
 
-                    <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5 ml-6">
-                      <div
-                        className={`h-2 sm:h-2.5 rounded-full ${
-                          isComplete ? "bg-green-500" : "bg-primary"
-                        }`}
-                        style={{ width: `${progress.percentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div className="mt-2 sm:mt-0 sm:ml-4 pt-1 self-end sm:self-auto group-hover:translate-x-1 transition-transform">
-                    <FiChevronRight
-                      className={`${
-                        isComplete ? "text-green-500" : "text-gray-400"
-                      }`}
-                      size={18}
-                    />
-                  </div>
-                </div>
-              </div>
+                      <LinearProgress
+                        variant="determinate"
+                        value={progress.percentage}
+                        color={isComplete ? "success" : "primary"}
+                        sx={{
+                          height: 8,
+                          borderRadius: 5,
+                          bgcolor: alpha(accent, 0.12),
+                        }}
+                      />
+                    </Box>
+                  </Stack>
+                </CardActionArea>
+              </Card>
             );
           })}
-        </div>
-      </BoxComponent>
-    </div>
+        </Stack>
+      )}
+    </Box>
   );
 };
 

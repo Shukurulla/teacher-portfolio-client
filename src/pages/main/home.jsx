@@ -2,17 +2,34 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
-  FiBriefcase,
-  FiAward,
-  FiBook,
-  FiArrowRight,
-  FiPlus,
-  FiChevronDown,
-} from "react-icons/fi";
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  TextField,
+  Autocomplete,
+  Stack,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import WorkRounded from "@mui/icons-material/WorkRounded";
+import EmojiEventsRounded from "@mui/icons-material/EmojiEventsRounded";
+import AddRounded from "@mui/icons-material/AddRounded";
+import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
+import BusinessRounded from "@mui/icons-material/BusinessRounded";
+import MenuBookRounded from "@mui/icons-material/MenuBookRounded";
 import JobService from "../../service/job.service";
 import FileService from "../../service/file.service";
 import FilesService from "../../service/file.service";
 import AchievmentService from "../../service/achievment.service";
+import { PageHeader, StatCard, Loader, EmptyState } from "../../components/ui";
+
+const GREEN = "#16a34a";
 
 const TeacherJobsPage = () => {
   const { jobs, isLoading } = useSelector((state) => state.job);
@@ -65,222 +82,245 @@ const TeacherJobsPage = () => {
     .reduce((a, b) => a + b, 0);
   const count = myFiles.filter((c) => c.status == "Tasdiqlandi").length;
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsDropdownOpen(false);
+    setSearchTerm("");
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Ish Joylarim</h1>
-            <p className="text-gray-600 mt-2">
-              Faoliyat olib borayotgan muassasalar
-            </p>
-          </div>
-          {jobs.length > 0 && (
-            <button
+    <Box>
+      <PageHeader
+        title="Ish Joylarim"
+        subtitle="Faoliyat olib borayotgan muassasalar"
+        action={
+          jobs.length > 0 ? (
+            <Button
+              variant="contained"
+              startIcon={<AddRounded />}
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
             >
-              <FiPlus className="mr-2" />
               Ish joyi qo'shish
-            </button>
-          )}
-        </div>
+            </Button>
+          ) : null
+        }
+      />
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          </div>
-        ) : jobs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-            {jobs.map((job) => (
-              <div
-                key={job._id}
-                className="bg-white rounded-xl shadow-md overflow-hidden transition-all hover:shadow-lg border border-gray-200"
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          icon={<WorkRounded />}
+          label="Ish joylari"
+          value={jobs.length}
+          color="#2563eb"
+        />
+        <StatCard
+          icon={<EmojiEventsRounded />}
+          label="Tasdiqlangan yutuqlar"
+          value={count}
+          color={GREEN}
+        />
+        <StatCard
+          icon={<EmojiEventsRounded />}
+          label="Umumiy ball"
+          value={rating}
+          color={GREEN}
+        />
+      </Box>
+
+      {isLoading ? (
+        <Loader height={260} />
+      ) : jobs.length > 0 ? (
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gap: 2.5,
+          }}
+        >
+          {jobs.map((job) => (
+            <Card
+              key={job._id}
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                transition: "transform .15s ease, box-shadow .15s ease",
+                "&:hover": {
+                  transform: "translateY(-3px)",
+                  boxShadow: "0 10px 28px rgba(15,23,42,0.1)",
+                },
+              }}
+            >
+              <CardContent
+                sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
               >
-                <div className="p-6">
-                  <div className="mb-4">
-                    <h2 className="text-xl font-bold text-gray-800 mb-1">
-                      {job.title}
-                    </h2>
-                    <p className="text-gray-600 font-medium">{job.workplace}</p>
-                  </div>
-
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center text-gray-700">
-                      <div className="w-[5%]">
-                        <FiBook className="mr-3 text-blue-500" />
-                      </div>
-                      <div className="w-[95%]">
-                        <span>Asosiy fan: {job.subject || job.title}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <div className="w-[5%]">
-                        <FiAward className="mr-3 text-yellow-500" />
-                      </div>
-                      <div className="w-[95%]">
-                        <span>
-                          {count} ta tasdiqlangan yutuq - {rating}
-                          ball
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <div className="w-[5%]">
-                        <FiBriefcase className="mr-3 text-green-500" />
-                      </div>
-                      <div className="w-[95%]">
-                        <span>{job.workplace}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <button
-                      onClick={() => navigate(`/job/${job._id}`)}
-                      className=" flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition mt-4"
-                    >
-                      <span>Batafsil ko'rish</span>
-                      <FiArrowRight className="ml-2" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-700 mb-2">
-              Ish joylari mavjud emas
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Hozircha qo'shilgan ish joylaringiz yo'q
-            </p>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center mx-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
-              <FiPlus className="mr-2" />
-              Ish joyi qo'shish
-            </button>
-          </div>
-        )}
-
-        {/* Add Job Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl">
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Yangi ish joyi qo'shish
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Lavozim
-                    </label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="w-full flex justify-between items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-left focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      >
-                        <span className="truncate">
-                          {title || "Lavozimni tanlang"}
-                        </span>
-                        <FiChevronDown
-                          className={`h-5 w-5 text-gray-400 transition-transform ${
-                            isDropdownOpen ? "transform rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {isDropdownOpen && (
-                        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                          <div className="px-3 py-2 sticky top-0 bg-white border-b">
-                            <input
-                              type="text"
-                              placeholder="Qidirish..."
-                              className="w-full px-2 py-1 border rounded text-sm"
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                          </div>
-                          <div className="max-h-48 overflow-y-auto">
-                            {filteredAchievments.length > 0 ? (
-                              filteredAchievments.map((item) => (
-                                <div
-                                  key={item._id}
-                                  className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50"
-                                  onClick={() => {
-                                    setTitle(item.section);
-                                    setIsDropdownOpen(false);
-                                    setSearchTerm("");
-                                  }}
-                                >
-                                  <div className="flex items-center">
-                                    <span className="block truncate">
-                                      {item.section}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))
-                            ) : (
-                              <div className="px-3 py-2 text-gray-500 text-sm">
-                                Hech narsa topilmadi
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ish joyi (Muassasa)
-                    </label>
-                    <input
-                      type="text"
-                      name="workplace"
-                      value={workplace}
-                      required
-                      onChange={(e) => setWorkplace(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="Masalan: 15-sonli maktab"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-end space-x-3">
-                  <button
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setIsDropdownOpen(false);
-                      setSearchTerm("");
+                <Stack direction="row" alignItems="center" spacing={1.75}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 3,
+                      display: "grid",
+                      placeItems: "center",
+                      bgcolor: alpha("#2563eb", 0.12),
+                      color: "#2563eb",
+                      flexShrink: 0,
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
                   >
-                    Bekor qilish
-                  </button>
-                  <button
-                    onClick={handleAddJob}
-                    disabled={!title || !workplace}
-                    className={`px-4 py-2 rounded-md transition ${
-                      !title || !workplace
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700"
-                    }`}
+                    <WorkRounded />
+                  </Box>
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="h6" noWrap title={job.title}>
+                      {job.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      noWrap
+                      title={job.workplace}
+                    >
+                      {job.workplace}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Stack spacing={1.5} sx={{ flexGrow: 1 }}>
+                  <Stack direction="row" alignItems="center" spacing={1.25}>
+                    <MenuBookRounded fontSize="small" color="primary" />
+                    <Typography variant="body2" color="text.secondary">
+                      Asosiy fan: {job.subject || job.title}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" alignItems="center" spacing={1.25}>
+                    <EmojiEventsRounded fontSize="small" sx={{ color: GREEN }} />
+                    <Typography variant="body2" color="text.secondary">
+                      {count} ta tasdiqlangan yutuq —{" "}
+                      <Box
+                        component="span"
+                        sx={{ color: GREEN, fontWeight: 800 }}
+                      >
+                        {rating} ball
+                      </Box>
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" alignItems="center" spacing={1.25}>
+                    <BusinessRounded
+                      fontSize="small"
+                      sx={{ color: "text.secondary" }}
+                    />
+                    <Typography variant="body2" color="text.secondary" noWrap>
+                      {job.workplace}
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                <Box
+                  sx={{ display: "flex", justifyContent: "flex-end", mt: 2.5 }}
+                >
+                  <Button
+                    variant="contained"
+                    endIcon={<ArrowForwardRounded />}
+                    onClick={() => navigate(`/job/${job._id}`)}
                   >
-                    Qo'shish
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+                    Batafsil ko'rish
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      ) : (
+        <Card>
+          <EmptyState
+            icon={<WorkRounded />}
+            title="Ish joylari mavjud emas"
+            description="Hozircha qo'shilgan ish joylaringiz yo'q"
+            action={
+              <Button
+                variant="contained"
+                startIcon={<AddRounded />}
+                onClick={() => setIsModalOpen(true)}
+              >
+                Ish joyi qo'shish
+              </Button>
+            }
+          />
+        </Card>
+      )}
+
+      {/* Add Job Modal */}
+      <Dialog
+        open={isModalOpen}
+        onClose={closeModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ fontWeight: 800 }}>
+          Yangi ish joyi qo'shish
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
+            <Autocomplete
+              open={isDropdownOpen}
+              onOpen={() => setIsDropdownOpen(true)}
+              onClose={() => setIsDropdownOpen(false)}
+              options={filteredAchievments}
+              filterOptions={(x) => x}
+              getOptionLabel={(o) => (o && o.section) || ""}
+              isOptionEqualToValue={(o, v) => o.section === v.section}
+              value={achievments.find((a) => a.section === title) || null}
+              onChange={(e, val) => {
+                setTitle(val ? val.section : "");
+                setIsDropdownOpen(false);
+                setSearchTerm("");
+              }}
+              onInputChange={(e, val, reason) => {
+                if (reason === "input") setSearchTerm(val);
+                if (reason === "clear") setSearchTerm("");
+              }}
+              noOptionsText="Hech narsa topilmadi"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Lavozim"
+                  placeholder="Lavozimni tanlang"
+                />
+              )}
+            />
+            <TextField
+              label="Ish joyi (Muassasa)"
+              name="workplace"
+              value={workplace}
+              onChange={(e) => setWorkplace(e.target.value)}
+              required
+              fullWidth
+              placeholder="Masalan: 15-sonli maktab"
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button color="inherit" onClick={closeModal}>
+            Bekor qilish
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddJob}
+            disabled={!title || !workplace}
+          >
+            Qo'shish
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

@@ -1,21 +1,35 @@
 import React, { useEffect, useState } from "react";
-import BoxComponent from "../../components/box.component";
-import UserService from "../../service/user.service";
 import { useDispatch, useSelector } from "react-redux";
+import UserService from "../../service/user.service";
 import FilesService from "../../service/file.service";
-import ModalComponent from "../../components/modal.component";
 import {
-  FiEdit,
-  FiUser,
-  FiPhone,
-  FiSettings,
-  FiCheck,
-  FiX,
-} from "react-icons/fi";
+  Box,
+  Card,
+  CardContent,
+  Avatar,
+  Typography,
+  Button,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
+import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
+import { PageHeader, StatCard, Loader } from "../../components/ui";
 
 const Profile = () => {
   const { user, isLoading } = useSelector((state) => state.user);
-  const { myFiles } = useSelector((state) => state.file);
+  const { myFiles, isLoading: filesLoading } = useSelector(
+    (state) => state.file
+  );
   const [openModal, setOpenModal] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -24,8 +38,6 @@ const Profile = () => {
   const [image, setImage] = useState("");
 
   const dispatch = useDispatch();
-
-  console.log(user);
 
   useEffect(() => {
     UserService.getUser(dispatch);
@@ -64,190 +76,236 @@ const Profile = () => {
     setOpenModal(false);
   };
 
+  // Yutuqlar statistikasi (myFiles massividan hisoblanadi)
+  const filesArray = Array.isArray(myFiles) ? myFiles : [];
+  const confirmedFiles = filesArray.filter((c) => c.status === "Tasdiqlandi");
+  const totalBall = confirmedFiles.reduce(
+    (sum, c) =>
+      sum + (c.files || []).reduce((s, f) => s + (f.rating?.rating || 0), 0),
+    0
+  );
+  const confirmedCount = confirmedFiles.length;
+  const totalCount = filesArray.length;
+
+  const region = user?.region;
+  const regionText =
+    typeof region === "string" ? region : region?.title || region?.region || "";
+  const fullName = `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
+  const initials = `${user?.firstName?.[0] || ""}${
+    user?.lastName?.[0] || ""
+  }`.toUpperCase();
+
   if (isLoading) {
     return (
-      <div className="p-4">
-        <BoxComponent>
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-full"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          </div>
-        </BoxComponent>
-      </div>
+      <Box>
+        <Loader height={360} label="Yuklanmoqda..." />
+      </Box>
     );
   }
 
   return (
-    <div className="p-4">
-      {/* Edit Profile Modal */}
-      <ModalComponent state={openModal} onClose={() => setOpenModal(false)}>
-        <BoxComponent>
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-semibold flex items-center">
-                <FiUser className="mr-2 text-primary" />
-                Profil ma'lumotlarini o'zgartirish
-              </h1>
-              <button
-                onClick={() => setOpenModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <FiX size={20} />
-              </button>
-            </div>
+    <Box>
+      <PageHeader
+        title="Mening profilim"
+        subtitle="Shaxsiy ma'lumotlaringiz va yutuqlaringiz statistikasi"
+        action={
+          <Button
+            variant="contained"
+            startIcon={<EditRoundedIcon />}
+            onClick={() => setOpenModal(true)}
+          >
+            Tahrirlash
+          </Button>
+        }
+      />
 
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex flex-col items-center">
-                <label htmlFor="profileImage" className="cursor-pointer">
-                  <img
-                    src={thumbnail || "/default-avatar.png"}
-                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
-                    alt="Profile"
-                  />
-                  <input
-                    type="file"
-                    onChange={changeFile}
-                    className="hidden"
-                    id="profileImage"
-                    accept="image/*"
-                  />
-                </label>
-                <label
-                  htmlFor="profileImage"
-                  className="mt-2 text-sm text-primary font-medium cursor-pointer"
-                >
-                  Rasmni o'zgartirish
-                </label>
-              </div>
-
-              <div className="flex-1 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ism
-                  </label>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Ismingiz"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Familiya
-                  </label>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Familiyangiz"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefon raqam
-                  </label>
-                  <input
-                    type="text"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Telefon raqam"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-6">
-              <button
-                onClick={() => setOpenModal(false)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md font-medium flex items-center"
-              >
-                <FiX className="mr-1" />
-                Bekor qilish
-              </button>
-              <button
-                onClick={submitHandler}
-                disabled={!firstName || !lastName || !phone}
-                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md font-medium flex items-center disabled:opacity-50"
-              >
-                <FiCheck className="mr-1" />
-                Saqlash
-              </button>
-            </div>
-          </div>
-        </BoxComponent>
-      </ModalComponent>
-
-      {/* Profile Content */}
-      <BoxComponent>
-        <div className="flex flex-col md:flex-row gap-6 p-4">
-          {/* Profile Image */}
-          <div className="flex flex-col items-center">
-            <img
-              src={user?.profileImage || "/default-avatar.png"}
-              className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
-              alt="Profile"
-            />
-            <button
-              onClick={() => setOpenModal(true)}
-              className="mt-4 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md font-medium flex items-center"
+      {/* Profil sarlavha kartasi */}
+      <Card sx={{ mb: 2.5 }}>
+        <CardContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={{ xs: 2, sm: 3.5 }}
+            alignItems={{ xs: "flex-start", sm: "center" }}
+          >
+            <Avatar
+              src={user?.profileImage || undefined}
+              sx={{
+                width: 112,
+                height: 112,
+                fontSize: 34,
+                fontWeight: 700,
+                bgcolor: "primary.main",
+              }}
             >
-              <FiEdit className="mr-2" />
-              Tahrirlash
-            </button>
-          </div>
+              {initials || <PersonRoundedIcon sx={{ fontSize: 56 }} />}
+            </Avatar>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h5" sx={{ mb: 1 }}>
+                {fullName || "Ismsiz foydalanuvchi"}
+              </Typography>
+              <Stack spacing={0.75}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <PhoneRoundedIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                    {user?.phone || "Telefon raqam kiritilmagan"}
+                  </Typography>
+                </Stack>
+                {regionText && (
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <PlaceRoundedIcon
+                      fontSize="small"
+                      sx={{ color: "text.secondary" }}
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                      {regionText}
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Box>
+          </Stack>
+        </CardContent>
+      </Card>
 
-          {/* Profile Info */}
-          <div className="flex-1">
-            <div className="space-y-4">
-              <div className="border-b pb-4">
-                <h1 className="text-2xl font-semibold">
-                  {user?.firstName} {user?.lastName}
-                </h1>
-                <div className="flex items-center mt-2 text-gray-600">
-                  <FiPhone className="mr-2" />
-                  <span>{user?.phone || "Telefon raqam kiritilmagan"}</span>
-                </div>
-              </div>
+      {/* Statistika kartalari */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
+          gap: 2.5,
+        }}
+      >
+        <StatCard
+          icon={<EmojiEventsRoundedIcon />}
+          label="Umumiy ball"
+          value={totalBall}
+          color="#2563eb"
+          loading={filesLoading}
+          hint="Tasdiqlangan yutuqlar bo'yicha"
+        />
+        <StatCard
+          icon={<EmojiEventsRoundedIcon />}
+          label="Tasdiqlangan yutuqlar"
+          value={confirmedCount}
+          color="#16a34a"
+          loading={filesLoading}
+        />
+        <StatCard
+          icon={<EmojiEventsRoundedIcon />}
+          label="Jami yutuqlar"
+          value={totalCount}
+          color="#7c3aed"
+          loading={filesLoading}
+        />
+      </Box>
 
-              {/* Progress Section */}
-              {/* <div className="bg-gray-50 p-4 rounded-lg">
-                <h2 className="font-medium mb-3 flex items-center">
-                  <FiSettings className="mr-2 text-primary" />
-                  Natijalar
-                </h2>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium">
-                    Umumiy ball: {myFiles?.totalBalls || 0}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {Math.min(
-                      Math.floor((myFiles?.totalBalls || 0) / 10) * 10,
-                      100
-                    )}
-                    %
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    className="bg-primary h-2.5 rounded-full"
-                    style={{
-                      width: `${Math.min(myFiles?.totalBalls || 0, 100)}%`,
+      {/* Profilni tahrirlash oynasi */}
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          Profil ma'lumotlarini o'zgartirish
+        </DialogTitle>
+        <DialogContent dividers>
+          <Stack spacing={3} sx={{ pt: 1 }}>
+            <Stack alignItems="center" spacing={1.25}>
+              <Button
+                component="label"
+                sx={{
+                  p: 0,
+                  minWidth: 0,
+                  borderRadius: "50%",
+                  "&:hover": { bgcolor: "transparent" },
+                }}
+              >
+                <Box sx={{ position: "relative" }}>
+                  <Avatar
+                    src={thumbnail || undefined}
+                    sx={{
+                      width: 120,
+                      height: 120,
+                      fontSize: 36,
+                      fontWeight: 700,
+                      bgcolor: "primary.main",
                     }}
-                  ></div>
-                </div>
-              </div> */}
-            </div>
-          </div>
-        </div>
-      </BoxComponent>
-    </div>
+                  >
+                    {initials || <PersonRoundedIcon sx={{ fontSize: 60 }} />}
+                  </Avatar>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      right: 2,
+                      bottom: 2,
+                      width: 36,
+                      height: 36,
+                      borderRadius: "50%",
+                      bgcolor: "primary.main",
+                      color: "#fff",
+                      display: "grid",
+                      placeItems: "center",
+                      border: "3px solid #fff",
+                    }}
+                  >
+                    <PhotoCameraRoundedIcon fontSize="small" />
+                  </Box>
+                </Box>
+                <input
+                  type="file"
+                  hidden
+                  id="profileImage"
+                  accept="image/*"
+                  onChange={changeFile}
+                />
+              </Button>
+              <Typography variant="caption" color="text.secondary">
+                Rasmni o'zgartirish uchun bosing
+              </Typography>
+            </Stack>
+
+            <TextField
+              label="Ism"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              fullWidth
+              placeholder="Ismingiz"
+            />
+            <TextField
+              label="Familiya"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              fullWidth
+              placeholder="Familiyangiz"
+            />
+            <TextField
+              label="Telefon raqam"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              fullWidth
+              placeholder="Telefon raqam"
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button color="inherit" onClick={() => setOpenModal(false)}>
+            Bekor qilish
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<SaveRoundedIcon />}
+            onClick={submitHandler}
+            disabled={!firstName || !lastName || !phone}
+          >
+            Saqlash
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

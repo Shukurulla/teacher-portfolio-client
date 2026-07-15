@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "../service/api";
 import {
-  FiAward,
-  FiEye,
-  FiClock,
-  FiCheck,
-  FiX,
-  FiTrash2,
-  FiMessageSquare,
-  FiRefreshCcw,
-} from "react-icons/fi";
+  Card,
+  CardContent,
+  Stack,
+  Box,
+  Typography,
+  Button,
+  Divider,
+  Alert,
+} from "@mui/material";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import FileViewerComponent from "./FileViewerComponent";
-import FileImage from "../../public/file.jpg";
 import Swal from "sweetalert2";
 import CreateBox from "../pages/achievments/create.box";
 import { useSelector } from "react-redux";
+import { StatusChip, SoftChip } from "./ui";
 
 const AchievmentComponent = ({ item, jobId }) => {
   const queryClient = useQueryClient();
@@ -23,7 +25,7 @@ const AchievmentComponent = ({ item, jobId }) => {
     state: false,
     value: {},
   });
-  const { achievments, isLoading } = useSelector((state) => state.achievment);
+  const { achievments } = useSelector((state) => state.achievment);
   const [viewingFile, setViewingFile] = useState(null);
 
   // Yutuqni o'chirish
@@ -67,35 +69,17 @@ const AchievmentComponent = ({ item, jobId }) => {
     });
   };
 
-  const getStatusBadge = () => {
-    let badgeClass = "";
-    let icon = null;
-    let text = "";
-
-    switch (item.status) {
-      case "Tasdiqlandi":
-        badgeClass = "bg-green-100 text-green-800";
-        icon = <FiCheck className="mr-1" />;
-        text = "Tasdiqlandi";
-        break;
-      case "Tasdiqlanmadi":
-        badgeClass = "bg-red-100 text-red-800";
-        icon = <FiX className="mr-1" />;
-        text = "Tasdiqlanmadi";
-        break;
-      default:
-        badgeClass = "bg-yellow-100 text-yellow-800";
-        icon = <FiClock className="mr-1" />;
-        text = "Kutilmoqda";
-    }
-
-    return { badgeClass, icon, text };
+  // Holat chipi — dizayn tizimidagi StatusChip/SoftChip orqali
+  const renderStatus = () => {
+    if (item.status === "Tasdiqlandi")
+      return <StatusChip status="Tasdiqlandi" />;
+    if (item.status === "Tasdiqlanmadi")
+      return <StatusChip status="Tasdiqlanmadi" />;
+    return <SoftChip label="Kutilmoqda" color="#d97706" />;
   };
 
-  const statusBadge = getStatusBadge();
-
   return (
-    <div className="border bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <Card>
       {modalState.state && (
         <CreateBox
           state={modalState.value}
@@ -103,27 +87,39 @@ const AchievmentComponent = ({ item, jobId }) => {
           id={item.from.job}
         />
       )}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h3 className="font-semibold text-lg">{item.achievments.title}</h3>
-            <p className="text-gray-600 text-sm">{item.achievments.section}</p>
+      <CardContent>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems="flex-start"
+          spacing={1.5}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              {item.achievments.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {item.achievments.section}
+            </Typography>
             {item.achievments.rating && (
-              <p className="text-gray-600 text-sm mt-1">
+              <Typography variant="body2" color="text.secondary" mt={0.5}>
                 {item.achievments.rating.ratingTitle} (
                 {item.achievments.rating.rating}/5)
-              </p>
+              </Typography>
             )}
-          </div>
-          <div>
-            <span
-              className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium ${statusBadge.badgeClass}`}
-            >
-              {statusBadge.icon}
-              {statusBadge.text}
-            </span>
-            {statusBadge.text == "Tasdiqlanmadi" ? (
-              <button
+          </Box>
+
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ flexShrink: 0 }}
+          >
+            {renderStatus()}
+            {item.status === "Tasdiqlanmadi" ? (
+              <Button
+                size="small"
+                variant="outlined"
                 onClick={() =>
                   setModalState({
                     state: true,
@@ -134,74 +130,67 @@ const AchievmentComponent = ({ item, jobId }) => {
                       ).achievmet,
                   })
                 }
-                className="ml-3 inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium bg-blue-200 text-blue-700"
               >
-                <FiRefreshCcw /> <span className="ml-2">qayta jonatish</span>
-              </button>
+                qayta jonatish
+              </Button>
             ) : (
               ""
             )}
-          </div>
-        </div>
+          </Stack>
+        </Stack>
 
-        <div className="flex justify-between items-center">
-          <div>
+        <Divider sx={{ my: 2 }} />
+
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          spacing={1.5}
+        >
+          <Box>
             {item.score && (
-              <span className="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
-                <FiAward className="mr-1" />
-                Ball: {item.score}
-              </span>
+              <SoftChip
+                color="#16a34a"
+                icon={<EmojiEventsRoundedIcon sx={{ fontSize: 16 }} />}
+                label={`Ball: ${item.score}`}
+              />
             )}
-          </div>
+          </Box>
 
-          <div className="flex items-center space-x-2">
-            <button
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button
+              size="small"
+              color="inherit"
+              startIcon={<VisibilityRoundedIcon />}
               onClick={() =>
                 setViewingFile({
                   fileUrl: item.fileUrl,
                   fileName: item.fileName,
                 })
               }
-              className="flex items-center text-sm text-gray-600 hover:text-primary"
+              sx={{ color: "text.secondary" }}
             >
-              <FiEye className="mr-1" />
               Faylni ko'rish
-            </button>
-            <button
+            </Button>
+            <Button
+              size="small"
+              color="error"
               onClick={() => handleDelete(item._id)}
-              className="flex items-center text-sm text-gray-600 hover:text-red-500"
             >
-              <FiTrash2 className="mr-1" />
               O'chirish
-            </button>
-          </div>
-        </div>
+            </Button>
+          </Stack>
+        </Stack>
 
         {item.resultMessage && (
-          <div
-            className={`mt-3 p-3 rounded-md border-l-4 ${
-              item.status === "Tasdiqlandi"
-                ? "bg-green-50 text-green-800 border-green-500"
-                : "bg-red-50 text-red-800 border-red-500"
-            }`}
+          <Alert
+            severity={item.status === "Tasdiqlandi" ? "success" : "error"}
+            sx={{ mt: 2 }}
           >
-            <div className="flex items-start">
-              <div
-                className={`p-1 rounded-full mr-3 ${
-                  item.status === "Tasdiqlandi"
-                    ? "bg-green-100 text-green-600"
-                    : "bg-red-100 text-red-600"
-                }`}
-              >
-                <FiMessageSquare className="text-sm" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm">{item.resultMessage}</p>
-              </div>
-            </div>
-          </div>
+            {item.resultMessage}
+          </Alert>
         )}
-      </div>
+      </CardContent>
 
       {viewingFile && (
         <FileViewerComponent
@@ -209,7 +198,7 @@ const AchievmentComponent = ({ item, jobId }) => {
           onClose={() => setViewingFile(null)}
         />
       )}
-    </div>
+    </Card>
   );
 };
 

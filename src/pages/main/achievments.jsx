@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { FiPlus, FiAward, FiEye, FiClock, FiCheck, FiX } from "react-icons/fi";
-import { Button, Badge } from "react-bootstrap";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Stack,
+  Divider,
+  Alert,
+} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import EmojiEventsRounded from "@mui/icons-material/EmojiEventsRounded";
 import FilesService from "../../service/file.service";
 import FileViewerComponent from "../../components/FileViewerComponent";
-import AchievmentComponent from "../../components/achievment.component";
 import AchievmentService from "../../service/achievment.service";
+import { PageHeader, StatusChip, SoftChip, Loader, EmptyState } from "../../components/ui";
 
 const AchievementsPage = () => {
   const { myFiles = [], isLoading } = useSelector((state) => state.file); // default empty array
@@ -19,83 +29,130 @@ const AchievementsPage = () => {
     AchievmentService.getAchievments(dispatch);
   }, [dispatch]);
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "Tasdiqlandi":
-        return {
-          icon: <FiCheck className="mr-1" />,
-          variant: "success",
-          text: "Tasdiqlangan",
-        };
-      case "Tasdiqlanmadi":
-        return {
-          icon: <FiX className="mr-1" />,
-          variant: "danger",
-          text: "Rad etilgan",
-        };
-      default:
-        return {
-          icon: <FiClock className="mr-1" />,
-          variant: "warning",
-          text: "Jarayonda",
-        };
-    }
-  };
-
   if (isLoading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "80vh" }}
-      >
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Yuklanmoqda...</span>
-        </div>
-      </div>
-    );
+    return <Loader height="80vh" label="Yuklanmoqda..." />;
   }
 
   const filesArray = Array.isArray(myFiles) ? myFiles : [];
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h3 mb-0">
-          <FiAward className="me-2" />
-          Mening Yutuqlarim
-        </h1>
-      </div>
+    <Box>
+      <PageHeader
+        title="Mening Yutuqlarim"
+        subtitle="Yuborilgan yutuqlaringiz va ularning tasdiqlanish holati"
+      />
 
       {filesArray.length === 0 ? (
-        <div className="card text-center py-5">
-          <div className="card-body">
-            <FiAward size={48} className="text-muted mb-3" />
-            <h5 className="card-title">Yutuqlar topilmadi</h5>
-            <p className="card-text">
-              Siz hali hech qanday yutuq qo'shmagansiz
-            </p>
-          </div>
-        </div>
+        <Card>
+          <EmptyState
+            icon={<EmojiEventsRounded />}
+            title="Yutuqlar topilmadi"
+            description="Siz hali hech qanday yutuq qo'shmagansiz"
+          />
+        </Card>
       ) : (
-        <div className="row g-4">
-          {myFiles.map((item) => {
-            const status = getStatusBadge(item.status);
-            console.log(item);
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gap: 2.5,
+          }}
+        >
+          {filesArray.map((item) => (
+            <Card key={item._id} sx={{ height: "100%" }}>
+              <CardContent>
+                <Stack
+                  direction="row"
+                  alignItems="flex-start"
+                  justifyContent="space-between"
+                  spacing={1.5}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1.75} sx={{ minWidth: 0 }}>
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 3,
+                        display: "grid",
+                        placeItems: "center",
+                        bgcolor: alpha("#2563eb", 0.12),
+                        color: "#2563eb",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <EmojiEventsRounded />
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                        {item.achievments.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.achievments.section}
+                      </Typography>
+                      {item.achievments.rating && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          display="block"
+                          mt={0.25}
+                        >
+                          {item.achievments.rating.ratingTitle} (
+                          {item.achievments.rating.rating}/5)
+                        </Typography>
+                      )}
+                    </Box>
+                  </Stack>
+                  <Box sx={{ flexShrink: 0 }}>
+                    <StatusChip status={item.status} />
+                  </Box>
+                </Stack>
 
-            return <AchievmentComponent item={item} jobId={item.from.job} />;
-          })}
-        </div>
+                {item.resultMessage && (
+                  <Alert
+                    severity={item.status === "Tasdiqlandi" ? "success" : "error"}
+                    sx={{ mt: 2 }}
+                  >
+                    {item.resultMessage}
+                  </Alert>
+                )}
+
+                <Divider sx={{ my: 2 }} />
+
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  spacing={1.5}
+                >
+                  {item.score ? (
+                    <SoftChip label={`Ball: ${item.score}`} color="#2563eb" />
+                  ) : (
+                    <Box />
+                  )}
+                  {item.files?.length > 0 && (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setViewingFile(item)}
+                    >
+                      Faylni ko'rish
+                    </Button>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
       )}
 
       {/* Fayl ko'ruvchi modal */}
-      {viewingFile && (
+      {viewingFile?.files?.length > 0 && (
         <FileViewerComponent
-          fileUrl={viewingFile.fileUrl}
-          fileName={viewingFile.fileName}
+          files={viewingFile.files}
           onClose={() => setViewingFile(null)}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
