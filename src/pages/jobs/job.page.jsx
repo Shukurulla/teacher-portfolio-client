@@ -163,14 +163,6 @@ const JobPage = () => {
 
   return (
     <Box>
-      <Button
-        startIcon={<ArrowBackRoundedIcon />}
-        onClick={() => navigate(-1)}
-        sx={{ mb: 1, color: "text.secondary" }}
-      >
-        Orqaga
-      </Button>
-
       <PageHeader
         title={data?.job?.title || "Kasb nomi"}
         subtitle={data?.job?.workplace || "Ish joyi"}

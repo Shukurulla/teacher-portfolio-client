@@ -99,18 +99,7 @@ const CreateAchievmetSection = () => {
         <CreateBox state={modalState.value} setState={setModalState} id={id} />
       )}
 
-      <PageHeader
-        title={sectionAchievments.section}
-        action={
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackRoundedIcon />}
-            onClick={() => navigate(`/achievment/create/${id}`)}
-          >
-            Orqaga
-          </Button>
-        }
-      />
+      <PageHeader title={sectionAchievments.section} />
 
       {/* Progress Summary */}
       <Card sx={{ mb: 3 }}>

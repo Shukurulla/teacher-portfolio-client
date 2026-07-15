@@ -17,9 +17,11 @@ import {
   Stack,
   Menu,
   MenuItem,
+  Button,
   ListItemIcon as MenuItemIcon,
 } from "@mui/material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
@@ -131,6 +133,15 @@ const Layout = ({ activePage }) => {
           <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>
             <MenuRoundedIcon />
           </IconButton>
+          {location.pathname !== "/" && (
+            <Button
+              onClick={() => navigate(-1)}
+              startIcon={<ArrowBackRoundedIcon />}
+              sx={{ color: "text.secondary" }}
+            >
+              Orqaga
+            </Button>
+          )}
           <Box sx={{ flex: 1 }} />
           <Box
             onClick={(e) => setAnchor(e.currentTarget)}
