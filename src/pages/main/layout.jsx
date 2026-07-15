@@ -119,7 +119,7 @@ const Layout = ({ activePage }) => {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden", bgcolor: "background.default" }}>
       <AppBar
         position="fixed"
         sx={{
@@ -193,7 +193,16 @@ const Layout = ({ activePage }) => {
         </Drawer>
       </Box>
 
-      <Box component="main" sx={{ flexGrow: 1, width: { md: `calc(100% - ${DRAWER}px)` }, minWidth: 0 }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          width: { md: `calc(100% - ${DRAWER}px)` },
+          minWidth: 0,
+          height: "100vh",
+          overflowY: "auto",
+        }}
+      >
         <Toolbar />
         <Box sx={{ p: { xs: 2, md: 3 } }}>{activePage}</Box>
       </Box>
