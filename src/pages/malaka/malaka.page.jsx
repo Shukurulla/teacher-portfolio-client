@@ -20,6 +20,7 @@ import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import { toast } from "react-hot-toast";
 import { PageHeader, Loader, EmptyState } from "../../components/ui";
+import { formatDate } from "../../utils/format";
 
 const FILIALS = [
   { key: "Nukus", name: "JTSBMQTMOI Nukus Filiali" },
@@ -179,11 +180,7 @@ const MalakaPage = () => {
                     <Stack direction="row" alignItems="center" gap={0.75}>
                       <EventRoundedIcon fontSize="small" color="primary" />
                       <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                        {new Date(r.date).toLocaleDateString("uz-UZ", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {formatDate(r.date)}
                       </Typography>
                     </Stack>
                     <Stack direction="row" alignItems="center" gap={0.75} mt={0.5}>

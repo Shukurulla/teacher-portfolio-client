@@ -24,6 +24,7 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import { PageHeader, StatCard, Loader } from "../../components/ui";
+import { formatPhone } from "../../utils/format";
 
 const Profile = () => {
   const { user, isLoading } = useSelector((state) => state.user);
@@ -150,7 +151,9 @@ const Profile = () => {
                     sx={{ color: "text.secondary" }}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    {user?.phone || "Telefon raqam kiritilmagan"}
+                    {user?.phone
+                      ? formatPhone(user.phone)
+                      : "Telefon raqam kiritilmagan"}
                   </Typography>
                 </Stack>
                 {regionText && (

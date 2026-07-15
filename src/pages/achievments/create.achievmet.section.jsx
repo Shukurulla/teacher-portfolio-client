@@ -20,6 +20,7 @@ import AchievmentService from "../../service/achievment.service";
 import { generateSlug } from "../../utils/generateSlug";
 import { PageHeader, SoftChip } from "../../components/ui";
 import CreateBox from "./create.box";
+import { formatDate } from "../../utils/format";
 
 const CreateAchievmetSection = () => {
   const { achievments, isLoading } = useSelector((state) => state.achievment);
@@ -208,9 +209,7 @@ const CreateAchievmetSection = () => {
                       <Stack alignItems="flex-end" spacing={0.5}>
                         <SoftChip label="Yuborilgan" color="#16a34a" />
                         <Typography variant="caption" color="text.secondary">
-                          {new Date(
-                            item.achievmet.updatedAt
-                          ).toLocaleDateString()}
+                          {formatDate(item.achievmet.updatedAt)}
                         </Typography>
                       </Stack>
                     ) : (
