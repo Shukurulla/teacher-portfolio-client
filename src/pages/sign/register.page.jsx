@@ -19,9 +19,9 @@ import {
 import SchoolRounded from "@mui/icons-material/SchoolRounded";
 import PersonRounded from "@mui/icons-material/PersonRounded";
 import BadgeRounded from "@mui/icons-material/BadgeRounded";
-import PhoneRounded from "@mui/icons-material/PhoneRounded";
 import LockRounded from "@mui/icons-material/LockRounded";
 import UserService from "../../service/user.service";
+import PhoneField from "../../components/PhoneField";
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -55,10 +55,10 @@ const RegisterPage = () => {
     if (
       !firstName.trim() ||
       !lastName.trim() ||
-      !phone.trim() ||
+      phone.replace(/\D/g, "").length < 12 ||
       !password.trim()
     ) {
-      setError("Barcha maydonlarni to'ldiring");
+      setError("Barcha maydonlarni to'ldiring (telefonni to'liq kiriting)");
       return;
     }
 
@@ -150,19 +150,11 @@ const RegisterPage = () => {
                 }}
               />
 
-              <TextField
+              <PhoneField
                 fullWidth
                 label="Telefon raqam"
-                placeholder="Telefon raqam"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PhoneRounded fontSize="small" color="action" />
-                    </InputAdornment>
-                  ),
-                }}
+                onChange={setPhone}
               />
 
               <TextField

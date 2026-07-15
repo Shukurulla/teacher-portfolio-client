@@ -16,9 +16,9 @@ import {
   Typography,
 } from "@mui/material";
 import SchoolRounded from "@mui/icons-material/SchoolRounded";
-import PhoneRounded from "@mui/icons-material/PhoneRounded";
 import LockRounded from "@mui/icons-material/LockRounded";
 import UserService from "../../service/user.service";
+import PhoneField from "../../components/PhoneField";
 
 const LoginPage = () => {
   const [phone, setPhone] = useState("");
@@ -33,8 +33,8 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
 
-    if (!phone.trim() || !password.trim()) {
-      setError("Telefon raqam va parolni kiriting");
+    if (phone.replace(/\D/g, "").length < 12 || !password.trim()) {
+      setError("To'liq telefon raqam va parolni kiriting");
       return;
     }
 
@@ -92,19 +92,11 @@ const LoginPage = () => {
                 </Alert>
               )}
 
-              <TextField
+              <PhoneField
                 fullWidth
                 label="Telefon raqam"
-                placeholder="Telefon raqam"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PhoneRounded fontSize="small" color="action" />
-                    </InputAdornment>
-                  ),
-                }}
+                onChange={setPhone}
               />
 
               <TextField
