@@ -65,13 +65,29 @@ const MalakaPage = () => {
       toast.error("Sanani tanlang");
       return;
     }
+
+    // Bugungi kun (vaqtni 00:00:00 ga tushiramiz)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Foydalanuvchi tanlagan sana
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      toast.error("O'tgan sanani tanlash mumkin emas");
+      return;
+    }
+
     setSaving(true);
+
     try {
       await axios.post("/malaka/create", {
         date,
         filial: filial || defaultFilial,
         note,
       });
+
       toast.success("Qo'shildi");
       setDate("");
       setNote("");
@@ -111,7 +127,14 @@ const MalakaPage = () => {
         }}
       >
         <Card>
-          <Box sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderBottom: "1px solid",
+              borderColor: "divider",
+            }}
+          >
             <Typography variant="h6">Yangi yozuv</Typography>
           </Box>
           <CardContent>
@@ -146,7 +169,12 @@ const MalakaPage = () => {
                 multiline
                 rows={2}
               />
-              <Button variant="contained" size="large" onClick={submit} disabled={saving}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={submit}
+                disabled={saving}
+              >
                 {saving ? "Saqlanmoqda..." : "Qo'shish"}
               </Button>
             </Stack>
@@ -154,7 +182,14 @@ const MalakaPage = () => {
         </Card>
 
         <Card>
-          <Box sx={{ px: 3, py: 2, borderBottom: "1px solid", borderColor: "divider" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderBottom: "1px solid",
+              borderColor: "divider",
+            }}
+          >
             <Typography variant="h6">Rejalarim</Typography>
           </Box>
           {loading ? (
@@ -183,14 +218,27 @@ const MalakaPage = () => {
                         {formatDate(r.date)}
                       </Typography>
                     </Stack>
-                    <Stack direction="row" alignItems="center" gap={0.75} mt={0.5}>
-                      <PlaceRoundedIcon fontSize="small" sx={{ color: "text.secondary" }} />
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      gap={0.75}
+                      mt={0.5}
+                    >
+                      <PlaceRoundedIcon
+                        fontSize="small"
+                        sx={{ color: "text.secondary" }}
+                      />
                       <Typography variant="body2" color="text.secondary">
                         {filialName(r.filial)}
                       </Typography>
                     </Stack>
                     {r.note && (
-                      <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                        mt={0.5}
+                      >
                         {r.note}
                       </Typography>
                     )}
