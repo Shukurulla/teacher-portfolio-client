@@ -10,35 +10,122 @@ import {
   MenuItem,
   TextField,
   Stack,
-  Divider,
   IconButton,
   Tooltip,
+  Avatar,
+  Chip,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
-import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
-import EventRoundedIcon from "@mui/icons-material/EventRounded";
 import { toast } from "react-hot-toast";
 import { PageHeader, Loader, EmptyState } from "../../components/ui";
-import { formatDate } from "../../utils/format";
 
 const FILIALS = [
-  { key: "Nukus", name: "JTSBMQTMOI Nukus Filiali" },
-  { key: "Fargʻona", name: "JTSBMQTMOI Fargʻona Filiali" },
-  { key: "Samarqand", name: "JTSBMQTMOI Samarqand Filiali" },
-  { key: "Toshkent", name: "JTSBMQTMO Instituti" },
+  {
+    key: "Nukus",
+    name: "JTSBMQTMOI Nukus Filiali",
+    provinces: [
+      "Qoraqalpog’iston Respublikasi",
+      "Xorazm viloyati",
+      "Buxoro viloyati",
+    ],
+  },
+  {
+    key: "Fargʻona",
+    name: "JTSBMQTMOI Fargʻona Filiali",
+    provinces: ["Fargʻona viloyati", "Andijon viloyati", "Namangan viloyati"],
+  },
+  {
+    key: "Samarqand",
+    name: "JTSBMQTMOI Samarqand Filiali",
+    provinces: [
+      "Samarqand viloyati",
+      "Qashqadaryo viloyati",
+      "Navoiy viloyati",
+      "Surxondaryo viloyati",
+    ],
+  },
+  {
+    key: "Toshkent",
+    name: "JTSBMQTMO Instituti",
+    provinces: [
+      "Toshkent shahri",
+      "Toshkent viloyati",
+      "Jizzax viloyati",
+      "Sirdaryo viloyati",
+    ],
+  },
+];
+
+export const directions = [
+  "I.Sport taʼlim muassasalari rahbar va oʻrinbosarlari",
+  "II. Sport taʼlim muassasalari yoʻriqchi-uslubchilari  ",
+  "III. Sport turlarini rivojlantirish respublika markazlari, Olimpiya va paralimpiya sport turlariga tayyorlash markazlari, ixtisoslashtirilgan sport maktablari, ixtisoslashtirilgan olimpiya zaxiralari maktablari trenerlari",
+  "IV. Sport maktablari trenerlari",
+  "V. Sport psixologlari",
+  "VI. Oliy taʼlim muassasalarining jismoniy tarbiya va sport yoʻnalishlari boʻyicha rahbar va pedagog kadrlari",
+  "VII. Kasbiy taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari(jismoniy tarbiya va sportga ixtisoslashtirilganlar bundan mustasno)",
+  "VIII. Umumiy oʻrta va oʻrta maxsus taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari",
+  "IX. Maktabgacha taʼlim tashkilotlari jismoniy tarbiya yuriqchilari",
 ];
 const filialName = (key) => FILIALS.find((f) => f.key === key)?.name || key;
+
+const MONTH_NAMES = [
+  "YANVAR",
+  "FEVRAL",
+  "MART",
+  "APREL",
+  "MAY",
+  "IYUN",
+  "IYUL",
+  "AVGUST",
+  "SENTABR",
+  "OKTABR",
+  "NOYABR",
+  "DEKABR",
+];
+
+const getPlanDateParts = (input) => {
+  const date = new Date(input);
+
+  if (Number.isNaN(date.getTime())) {
+    return { day: "—", month: "", year: "" };
+  }
+
+  return {
+    day: String(date.getDate()).padStart(2, "0"),
+    month: MONTH_NAMES[date.getMonth()],
+    year: date.getFullYear(),
+  };
+};
+
+const getTodayDateValue = () => {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${today.getFullYear()}-${month}-${day}`;
+};
 
 const MalakaPage = () => {
   const { user } = useSelector((s) => s.user);
   const defaultFilial = user?.region?.region || "";
+  const defaultProvince =
+    FILIALS.find((f) => f.key === defaultFilial)?.provinces?.[0] || "";
+  const minDate = getTodayDateValue();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState("");
   const [filial, setFilial] = useState(defaultFilial);
+  const [province, setProvince] = useState(defaultProvince);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const currentFilial = FILIALS.find((f) => f.key === filial) || FILIALS[0];
+  const provinces = currentFilial.provinces;
+  const [direction, setDirection] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -57,7 +144,15 @@ const MalakaPage = () => {
   }, []);
 
   useEffect(() => {
-    if (defaultFilial && !filial) setFilial(defaultFilial);
+    if (!defaultFilial) return;
+
+    setFilial(defaultFilial);
+
+    const item = FILIALS.find((f) => f.key === defaultFilial);
+
+    if (item) {
+      setProvince(item.provinces[0]);
+    }
   }, [defaultFilial]);
 
   const submit = async () => {
@@ -65,38 +160,45 @@ const MalakaPage = () => {
       toast.error("Sanani tanlang");
       return;
     }
-
-    // Bugungi kun (vaqtni 00:00:00 ga tushiramiz)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Foydalanuvchi tanlagan sana
-    const selectedDate = new Date(date);
-    selectedDate.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
-      toast.error("O'tgan sanani tanlash mumkin emas");
+    if (!directions.find((d) => d == direction)) {
+      toast.error("Iltimos yonalishingizni tanlang");
       return;
     }
-
     setSaving(true);
-
     try {
       await axios.post("/malaka/create", {
         date,
-        filial: filial || defaultFilial,
+        filial,
+        province,
         note,
+        direction,
       });
-
       toast.success("Qo'shildi");
+      const item = FILIALS.find((f) => f.key === defaultFilial);
+
       setDate("");
       setNote("");
       setFilial(defaultFilial);
+      setProvince(item?.provinces?.[0] || "");
       await load();
     } catch (e) {
       toast.error(e.response?.data?.message || "Saqlashda xatolik");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleFilialChange = (e) => {
+    const value = e.target.value;
+
+    setFilial(value);
+
+    const item = FILIALS.find((f) => f.key === value);
+
+    if (item) {
+      setProvince(item.provinces[0]);
+    } else {
+      setProvince("");
     }
   };
 
@@ -125,6 +227,7 @@ const MalakaPage = () => {
           gap: 2.5,
           alignItems: "start",
         }}
+        style={{ marginTop: "25px" }}
       >
         <Card>
           <Box
@@ -141,23 +244,49 @@ const MalakaPage = () => {
             <Stack spacing={2.5}>
               <TextField
                 type="date"
-                label="Sana"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 fullWidth
                 InputLabelProps={{ shrink: true }}
+                inputProps={{ min: minDate }}
               />
               <TextField
                 select
                 label="Filial"
                 value={filial}
-                onChange={(e) => setFilial(e.target.value)}
+                onChange={handleFilialChange}
                 fullWidth
                 helperText="Standart holatda viloyatingiz filiali"
               >
                 {FILIALS.map((f) => (
                   <MenuItem key={f.key} value={f.key}>
                     {f.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                label="Viloyat"
+                value={province}
+                onChange={(e) => setProvince(e.target.value)}
+                fullWidth
+              >
+                {provinces.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                label="Yonalish"
+                value={direction}
+                onChange={(e) => setDirection(e.target.value)}
+                required={true}
+              >
+                {directions.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
                   </MenuItem>
                 ))}
               </TextField>
@@ -181,78 +310,268 @@ const MalakaPage = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Box>
           <Box
             sx={{
-              px: 3,
-              py: 2,
-              borderBottom: "1px solid",
-              borderColor: "divider",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              mb: 2.5,
             }}
           >
-            <Typography variant="h6">Rejalarim</Typography>
+            <Avatar
+              sx={{
+                width: { xs: 54, sm: 64 },
+                height: { xs: 54, sm: 64 },
+                bgcolor: "#EEF3FF",
+                color: "#3563E9",
+                flexShrink: 0,
+              }}
+            >
+              <CalendarMonthRoundedIcon sx={{ fontSize: { xs: 30, sm: 36 } }} />
+            </Avatar>
+
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: 28, sm: 36 },
+                  color: "#1A2238",
+                  lineHeight: 1,
+                }}
+              >
+                Rejalarim
+              </Typography>
+
+              <Typography
+                color="#6B7280"
+                fontSize={{ xs: 14, sm: 16 }}
+                mt={0.75}
+              >
+                Rejalashtirilgan malaka oshirish kurslari ro'yxati
+              </Typography>
+            </Box>
           </Box>
+
           {loading ? (
-            <Loader height={200} />
+            <Card>
+              <Loader height={200} />
+            </Card>
           ) : records.length === 0 ? (
-            <EmptyState
-              icon={<SchoolRoundedIcon />}
-              title="Reja yo'q"
-              description="Malaka oshirish sanasini chapdagi shakl orqali qo'shing"
-            />
+            <Card>
+              <EmptyState
+                icon={<SchoolRoundedIcon />}
+                title="Reja yo'q"
+                description="Malaka oshirish sanasini chapdagi shakl orqali qo'shing"
+              />
+            </Card>
           ) : (
-            <Stack divider={<Divider />}>
-              {records.map((r) => (
-                <Stack
-                  key={r._id}
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  gap={1.5}
-                  sx={{ px: 3, py: 2 }}
-                >
-                  <Box sx={{ minWidth: 0 }}>
-                    <Stack direction="row" alignItems="center" gap={0.75}>
-                      <EventRoundedIcon fontSize="small" color="primary" />
-                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                        {formatDate(r.date)}
-                      </Typography>
-                    </Stack>
+            <Stack spacing={2}>
+              {records.map((r) => {
+                const note = r.note?.trim();
+                const dateParts = getPlanDateParts(r.date);
+
+                return (
+                  <Card
+                    key={r._id}
+                    elevation={0}
+                    sx={{
+                      p: { xs: 2, sm: 2.5 },
+                      border: "1px solid #E8ECF5",
+                      display: "flex",
+                      alignItems: { xs: "stretch", sm: "center" },
+                      justifyContent: "space-between",
+                      gap: { xs: 2, sm: 2.5 },
+                      position: "relative",
+                      overflow: "hidden",
+                      padding: "10px",
+                      flexDirection: { xs: "column", sm: "row" },
+                      "&:before": {
+                        content: '""',
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 7,
+                        bgcolor: "#3563E9",
+                      },
+                    }}
+                  >
                     <Stack
-                      direction="row"
-                      alignItems="center"
-                      gap={0.75}
-                      mt={0.5}
+                      direction={{ xs: "column", md: "row" }}
+                      alignItems={{ xs: "stretch", md: "center" }}
+                      gap={{ xs: 2, md: 3 }}
+                      sx={{
+                        minWidth: 0,
+                        flex: 1,
+                        pl: { xs: 0.75, sm: 1 },
+                      }}
                     >
-                      <PlaceRoundedIcon
-                        fontSize="small"
-                        sx={{ color: "text.secondary" }}
-                      />
-                      <Typography variant="body2" color="text.secondary">
-                        {filialName(r.filial)}
-                      </Typography>
-                    </Stack>
-                    {r.note && (
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                        mt={0.5}
+                      <Box
+                        sx={{
+                          width: { xs: "100%", md: 128 },
+                          // minHeight: { xs: 112, md: 158 },
+                          borderRadius: { xs: 3, sm: 4 },
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexShrink: 0,
+                        }}
                       >
-                        {r.note}
-                      </Typography>
-                    )}
-                  </Box>
-                  <Tooltip title="O'chirish">
-                    <IconButton color="error" onClick={() => remove(r._id)}>
-                      <DeleteOutlineRoundedIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              ))}
+                        <CalendarMonthRoundedIcon
+                          sx={{
+                            color: "#3563E9",
+                            fontSize: { xs: 30, md: 36 },
+                            mb: 1,
+                          }}
+                        />
+
+                        <Typography
+                          fontWeight={800}
+                          fontSize={{ xs: 40, md: 48 }}
+                          color="#3563E9"
+                          lineHeight={1}
+                        >
+                          {dateParts.day}
+                        </Typography>
+
+                        <Typography
+                          fontWeight={700}
+                          color="#3563E9"
+                          fontSize={15}
+                        >
+                          {dateParts.month}
+                        </Typography>
+
+                        <Typography mt={0.5} color="#64748B" fontSize={15}>
+                          {dateParts.year}
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ minWidth: 0 }}>
+                        <Chip
+                          label={filialName(r.filial)}
+                          sx={{
+                            maxWidth: "100%",
+                            height: "auto",
+                            bgcolor: "#EEF3FF",
+                            color: "#3563E9",
+                            fontWeight: 700,
+                            fontSize: { xs: 14, sm: 15 },
+                            px: 1,
+                            py: 1,
+                            borderRadius: 2,
+                            "& .MuiChip-label": {
+                              display: "block",
+                              whiteSpace: "normal",
+                              lineHeight: 1.35,
+                              py: 0.35,
+                            },
+                          }}
+                        />
+
+                        {r.province && (
+                          <Box
+                            mt={4}
+                            // display="flex"
+                            style={{
+                              display: "flex",
+                              marginTop: "15px",
+                              gap: "10px",
+                            }}
+                            alignItems="center"
+                            gap={1}
+                            sx={{ minWidth: 0 }}
+                          >
+                            <LocationOnRoundedIcon
+                              sx={{
+                                color: "#5C667A",
+                                fontSize: { xs: 24, sm: 28 },
+                                flexShrink: 0,
+                              }}
+                            />
+
+                            <Typography
+                              fontSize={{ xs: 17, sm: 20 }}
+                              fontWeight={700}
+                              sx={{ overflowWrap: "anywhere" }}
+                            >
+                              {r.province}
+                            </Typography>
+                          </Box>
+                        )}
+                        {r.direction && (
+                          <Box
+                            mt={4}
+                            // display="flex"
+                            style={{
+                              display: "flex",
+                              marginTop: "15px",
+                              gap: "10px",
+                            }}
+                            alignItems="center"
+                            gap={1}
+                            sx={{ minWidth: 0 }}
+                          >
+                            <SchoolRoundedIcon
+                              sx={{
+                                color: "#5C667A",
+                                fontSize: { xs: 24, sm: 28 },
+                                flexShrink: 0,
+                              }}
+                            />
+
+                            <Typography
+                              fontSize={{ xs: 17, sm: 20 }}
+                              fontWeight={700}
+                              sx={{ overflowWrap: "anywhere" }}
+                            >
+                              {r.direction}
+                            </Typography>
+                          </Box>
+                        )}
+                        {note && (
+                          <Typography
+                            mt={2}
+                            color="#7A8599"
+                            fontSize={{ xs: 15, sm: 17 }}
+                            sx={{ overflowWrap: "anywhere", lineHeight: 1.45 }}
+                          >
+                            {note}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Stack>
+
+                    <Tooltip title="O'chirish">
+                      <IconButton
+                        onClick={() => remove(r._id)}
+                        sx={{
+                          width: { xs: "100%", sm: 58 },
+                          height: { xs: 52, sm: 58 },
+                          borderRadius: { xs: 2.5, sm: "50%" },
+                          bgcolor: "#FFF1F1",
+                          flexShrink: 0,
+                          "&:hover": {
+                            bgcolor: "#FFE4E4",
+                          },
+                        }}
+                      >
+                        <DeleteOutlineRoundedIcon
+                          sx={{
+                            color: "#E53935",
+                            fontSize: { xs: 30, sm: 34 },
+                          }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  </Card>
+                );
+              })}
             </Stack>
           )}
-        </Card>
+        </Box>
       </Box>
     </Box>
   );
