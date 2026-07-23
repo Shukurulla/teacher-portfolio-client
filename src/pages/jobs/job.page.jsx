@@ -26,6 +26,18 @@ import Swal from "sweetalert2";
 import AchievmentService from "../../service/achievment.service";
 import { PageHeader, StatCard, Loader, EmptyState } from "../../components/ui";
 
+const directions = [
+  "I.Sport taʼlim muassasalari rahbar va oʻrinbosarlari",
+  "II. Sport taʼlim muassasalari yoʻriqchi-uslubchilari  ",
+  "III. Sport turlarini rivojlantirish respublika markazlari, Olimpiya va paralimpiya sport turlariga tayyorlash markazlari, ixtisoslashtirilgan sport maktablari, ixtisoslashtirilgan olimpiya zaxiralari maktablari trenerlari",
+  "IV. Sport maktablari trenerlari",
+  "V. Sport psixologlari",
+  "VI. Oliy taʼlim muassasalarining jismoniy tarbiya va sport yoʻnalishlari boʻyicha rahbar va pedagog kadrlari",
+  "VII. Kasbiy taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari(jismoniy tarbiya va sportga ixtisoslashtirilganlar bundan mustasno)",
+  "VIII. Umumiy oʻrta va oʻrta maxsus taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari",
+  "IX. Maktabgacha taʼlim tashkilotlari jismoniy tarbiya yuriqchilari",
+];
+
 const JobPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -264,9 +276,9 @@ const JobPage = () => {
               onChange={(e) => setJobTitle(e.target.value)}
               fullWidth
             >
-              {achievments.map((item, i) => (
-                <MenuItem key={i} value={item.section}>
-                  {item.section}
+              {directions.map((item, i) => (
+                <MenuItem key={i} value={item}>
+                  {item}
                 </MenuItem>
               ))}
             </TextField>

@@ -72,5 +72,13 @@ const UserService = {
       console.log(error);
     }
   },
+  async getDistricts(province) {
+    try {
+      const { data } = await axios.get(`/teacher/districts/${province}`);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 export default UserService;

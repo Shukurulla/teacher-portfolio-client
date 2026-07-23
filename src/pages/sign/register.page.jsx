@@ -31,10 +31,12 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const { isLoading } = useSelector((state) => state.user);
   const [regions, setRegions] = useState([]);
+  const [districts, setDistricts] = useState([]);
   const [province, setProvince] = useState({
     title: "Toshkent shahri",
     region: "Toshkent",
   });
+  const [district, setDistrict] = useState("");
 
   useEffect(() => {
     const provinces = async () => {
@@ -44,6 +46,17 @@ const RegisterPage = () => {
     };
     provinces();
   }, []);
+
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (province?.title) {
+        const response = await UserService.getDistricts(province.title);
+        setDistricts(response.data || []);
+        setDistrict(""); // Reset district when province changes
+      }
+    };
+    fetchDistricts();
+  }, [province]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -56,7 +69,8 @@ const RegisterPage = () => {
       !firstName.trim() ||
       !lastName.trim() ||
       phone.replace(/\D/g, "").length < 12 ||
-      !password.trim()
+      !password.trim() ||
+      !district.trim()
     ) {
       setError("Barcha maydonlarni to'ldiring (telefonni to'liq kiriting)");
       return;
@@ -68,6 +82,7 @@ const RegisterPage = () => {
       phone,
       password,
       province,
+      district,
     };
 
     await UserService.postUser(dispatch, userSchema, navigate);
@@ -190,6 +205,28 @@ const RegisterPage = () => {
                 {regions.map((item, index) => (
                   <MenuItem key={index} value={JSON.stringify(item)}>
                     {item.title}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                select
+                fullWidth
+                label="Tuman"
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                disabled={!districts.length}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SchoolRounded fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+              >
+                {districts.map((item, index) => (
+                  <MenuItem key={index} value={item}>
+                    {item}
                   </MenuItem>
                 ))}
               </TextField>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "https://server.portfolio-sport.uz";
+axios.defaults.baseURL = "http://localhost:7474";
 axios.interceptors.request.use((option) => {
   const token = localStorage.getItem("teacher-jwt")
     ? localStorage.getItem("teacher-jwt")

@@ -33,8 +33,8 @@ const SECTIONS = [
   { rn: "IV", title: "Sport maktablari trenerlari", pdf: 4, links: [DIPLOM, SPORT_TOIFA, MALAKA_TOIFA, HAKAMLIK, SINOV] },
   { rn: "V", title: "Sport psixologlari", pdf: 5, links: [{ label: "Psixologiya (sport) sohasidagi ma'lumoti", url: "https://diplom.edu.uz/" }, { label: "Sport turi bo'yicha kattalar sporti razryadi", url: "https://my.sport.uz/uz/login" }] },
   { rn: "VI", title: "Oliy ta'lim muassasalarining jismoniy tarbiya va sport yo'nalishlari bo'yicha rahbar va pedagog kadrlari", pdf: 6, links: [{ label: "Ilmiy daraja va unvoni uchun", url: "https://oldmy.gov.uz/oz/submission-scientific-degrees-v1/applicanti-info-applicant/create" }, TRENER] },
-  { rn: "VII", title: "Kasbiy ta'lim tashkilotlari jismoniy tarbiya fani o'qituvchilari", pdf: 7, links: [SPORT_TOIFA, TRENER, SINOV] },
-  { rn: "VIII", title: "Umumiy o'rta va o'rta maxsus ta'lim tashkilotlari jismoniy tarbiya fani o'qituvchilari", pdf: 8, links: [MALAKA_PED, SPORT_TOIFA, TRENER, SINOV, ADABIYOT] },
+  { rn: "VII", title: "Kasbiy ta'lim tashkilotlari jismoniy tarbiya fani mutaxassislari", pdf: 7, links: [SPORT_TOIFA, TRENER, SINOV] },
+  { rn: "VIII", title: "Umumiy o'rta va o'rta maxsus ta'lim tashkilotlari jismoniy tarbiya fani mutaxassislari", pdf: 8, links: [MALAKA_PED, SPORT_TOIFA, TRENER, SINOV, ADABIYOT] },
   { rn: "IX", title: "Maktabgacha ta'lim tashkilotlari jismoniy tarbiya yo'riqchilari", pdf: 9, links: [DIPLOM, MALAKA_PED, SPORT_TOIFA, TRENER, SINOV, ADABIYOT] },
 ];
 

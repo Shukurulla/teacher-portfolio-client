@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-// Portfolio-sport — o'qituvchi ilovasi. Admin bilan bir xil dizayn tili.
+// Portfolio-sport — mutaxassis ilovasi. Admin bilan bir xil dizayn tili.
 export const theme = createTheme({
   palette: {
     primary: { main: "#2563eb", dark: "#1d4ed8", light: "#60a5fa" },
