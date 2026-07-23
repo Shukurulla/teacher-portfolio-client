@@ -14,10 +14,9 @@ import { PageHeader } from "../../components/ui";
 
 // ⚙️ Bu qiymatlarni o'zingiznikiga o'zgartiring
 const CONTACTS = {
-  telegramNick: "@portfolio_sport_admin",
-  telegramGroup: "https://t.me/portfolio_sport",
-  telegramGroupLabel: "@portfolio_sport",
-  phone: "+998 90 000 00 00",
+  telegramNick: "@islam4492",
+  telegramGroup: "https://t.me/portfoliosportuz",
+  phone: "+998 99-455-44-92",
 };
 
 const ContactCard = ({ icon, color, label, value, href }) => (
@@ -39,7 +38,9 @@ const ContactCard = ({ icon, color, label, value, href }) => (
               {value}
             </MuiLink>
           ) : (
-            <Typography sx={{ fontWeight: 700, fontSize: 18 }}>{value}</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+              {value}
+            </Typography>
           )}
         </Box>
       </Stack>
@@ -58,7 +59,11 @@ const ContactPage = () => {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "repeat(3,1fr)" },
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            lg: "repeat(3,1fr)",
+          },
           gap: 2.5,
         }}
       >
@@ -73,8 +78,8 @@ const ContactPage = () => {
           icon={<GroupsRoundedIcon />}
           color="#7c3aed"
           label="Telegram guruh"
-          value={CONTACTS.telegramGroupLabel}
           href={CONTACTS.telegramGroup}
+          value={CONTACTS.telegramGroup}
         />
         <ContactCard
           icon={<PhoneRoundedIcon />}

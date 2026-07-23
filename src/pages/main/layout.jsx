@@ -38,10 +38,22 @@ const DEFAULT_AVATAR =
 
 const NAV = [
   { to: "/", label: "Bosh sahifa", icon: <HomeRoundedIcon />, end: true },
-  { to: "/achievments", label: "Mening yutuqlarim", icon: <EmojiEventsRoundedIcon /> },
-  { to: "/special", label: "Maxsus yutuqlar", icon: <WorkspacePremiumRoundedIcon /> },
+  {
+    to: "/achievments",
+    label: "Mening yutuqlarim",
+    icon: <EmojiEventsRoundedIcon />,
+  },
+  {
+    to: "/special",
+    label: "Maxsus yutuqlar",
+    icon: <WorkspacePremiumRoundedIcon />,
+  },
   { to: "/malaka", label: "Malaka oshirish", icon: <SchoolRoundedIcon /> },
-  { to: "/foydalanuvchilar", label: "Foydalanuvchilar uchun", icon: <MenuBookRoundedIcon /> },
+  {
+    to: "/foydalanuvchilar",
+    label: "Foydalanuvchilar uchun",
+    icon: <MenuBookRoundedIcon />,
+  },
   { to: "/boglanish", label: "Bog'lanish", icon: <SupportAgentRoundedIcon /> },
 ];
 
@@ -70,7 +82,12 @@ const Layout = ({ activePage }) => {
         background: "linear-gradient(180deg,#0f172a 0%,#1e293b 100%)",
       }}
     >
-      <Stack direction="row" alignItems="center" gap={1.5} sx={{ px: 2.5, py: 2.75 }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        gap={1.5}
+        sx={{ px: 2.5, py: 2.75 }}
+      >
         <Avatar sx={{ bgcolor: "primary.main", width: 42, height: 42 }}>
           <SchoolRoundedIcon />
         </Avatar>
@@ -79,7 +96,7 @@ const Layout = ({ activePage }) => {
             Portfolio Sport
           </Typography>
           <Typography variant="caption" sx={{ color: "#94a3b8" }}>
-            O'qituvchi kabineti
+            Mutaxassis kabineti
           </Typography>
         </Box>
       </Stack>
@@ -96,12 +113,18 @@ const Layout = ({ activePage }) => {
             sx={{
               color: "#cbd5e1",
               mb: 0.5,
-              "&.Mui-selected": { color: "#fff", bgcolor: "rgba(255,255,255,0.14) !important" },
+              "&.Mui-selected": {
+                color: "#fff",
+                bgcolor: "rgba(255,255,255,0.14) !important",
+              },
               "& .MuiListItemIcon-root": { color: "inherit" },
             }}
           >
             <ListItemIcon sx={{ minWidth: 40 }}>{it.icon}</ListItemIcon>
-            <ListItemText primary={it.label} primaryTypographyProps={{ fontWeight: 600, fontSize: 14 }} />
+            <ListItemText
+              primary={it.label}
+              primaryTypographyProps={{ fontWeight: 600, fontSize: 14 }}
+            />
           </ListItemButton>
         ))}
       </List>
@@ -109,19 +132,32 @@ const Layout = ({ activePage }) => {
       <List sx={{ py: 1 }}>
         <ListItemButton
           onClick={logout}
-          sx={{ color: "#fca5a5", "& .MuiListItemIcon-root": { color: "inherit" } }}
+          sx={{
+            color: "#fca5a5",
+            "& .MuiListItemIcon-root": { color: "inherit" },
+          }}
         >
           <ListItemIcon sx={{ minWidth: 40 }}>
             <LogoutRoundedIcon />
           </ListItemIcon>
-          <ListItemText primary="Chiqish" primaryTypographyProps={{ fontWeight: 600, fontSize: 14 }} />
+          <ListItemText
+            primary="Chiqish"
+            primaryTypographyProps={{ fontWeight: 600, fontSize: 14 }}
+          />
         </ListItemButton>
       </List>
     </Box>
   );
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden", bgcolor: "background.default" }}>
+    <Box
+      sx={{
+        display: "flex",
+        height: "100vh",
+        overflow: "hidden",
+        bgcolor: "background.default",
+      }}
+    >
       <AppBar
         position="fixed"
         sx={{
@@ -130,7 +166,11 @@ const Layout = ({ activePage }) => {
         }}
       >
         <Toolbar sx={{ gap: 1 }}>
-          <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>
+          <IconButton
+            edge="start"
+            onClick={() => setMobileOpen(true)}
+            sx={{ display: { md: "none" } }}
+          >
             <MenuRoundedIcon />
           </IconButton>
           {location.pathname !== "/" && (
@@ -156,8 +196,14 @@ const Layout = ({ activePage }) => {
               "&:hover": { bgcolor: "action.hover" },
             }}
           >
-            <Avatar src={user?.profileImage || DEFAULT_AVATAR} sx={{ width: 36, height: 36 }} />
-            <Typography variant="body2" sx={{ fontWeight: 600, display: { xs: "none", sm: "block" } }}>
+            <Avatar
+              src={user?.profileImage || DEFAULT_AVATAR}
+              sx={{ width: 36, height: 36 }}
+            />
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, display: { xs: "none", sm: "block" } }}
+            >
               {user?.firstName} {user?.lastName}
             </Typography>
           </Box>
@@ -168,37 +214,62 @@ const Layout = ({ activePage }) => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
-            <MenuItem onClick={() => { setAnchor(null); navigate("/profile"); }}>
-              <MenuItemIcon><PersonRoundedIcon fontSize="small" /></MenuItemIcon>
+            <MenuItem
+              onClick={() => {
+                setAnchor(null);
+                navigate("/profile");
+              }}
+            >
+              <MenuItemIcon>
+                <PersonRoundedIcon fontSize="small" />
+              </MenuItemIcon>
               Profil
             </MenuItem>
-            <MenuItem onClick={() => { setAnchor(null); navigate("/settings"); }}>
-              <MenuItemIcon><SettingsRoundedIcon fontSize="small" /></MenuItemIcon>
+            <MenuItem
+              onClick={() => {
+                setAnchor(null);
+                navigate("/settings");
+              }}
+            >
+              <MenuItemIcon>
+                <SettingsRoundedIcon fontSize="small" />
+              </MenuItemIcon>
               Sozlamalar
             </MenuItem>
             <Divider />
             <MenuItem onClick={logout}>
-              <MenuItemIcon><LogoutRoundedIcon fontSize="small" /></MenuItemIcon>
+              <MenuItemIcon>
+                <LogoutRoundedIcon fontSize="small" />
+              </MenuItemIcon>
               Chiqish
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      <Box component="nav" sx={{ width: { md: DRAWER }, flexShrink: { md: 0 } }}>
+      <Box
+        component="nav"
+        sx={{ width: { md: DRAWER }, flexShrink: { md: 0 } }}
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={() => setMobileOpen(false)}
           ModalProps={{ keepMounted: true }}
-          sx={{ display: { xs: "block", md: "none" }, "& .MuiDrawer-paper": { width: DRAWER, border: 0 } }}
+          sx={{
+            display: { xs: "block", md: "none" },
+            "& .MuiDrawer-paper": { width: DRAWER, border: 0 },
+          }}
         >
           {drawer}
         </Drawer>
         <Drawer
           variant="permanent"
           open
-          sx={{ display: { xs: "none", md: "block" }, "& .MuiDrawer-paper": { width: DRAWER, border: 0 } }}
+          sx={{
+            display: { xs: "none", md: "block" },
+            "& .MuiDrawer-paper": { width: DRAWER, border: 0 },
+          }}
         >
           {drawer}
         </Drawer>
