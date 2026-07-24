@@ -200,7 +200,11 @@ const TeacherJobsPage = () => {
             gap: 2.5,
           }}
         >
-          {jobs.map((job) => (
+          {jobs.map((job) => {
+            // Har bir ish joyining o'ziga tegishli yutuq va ballini hisoblash
+            const { length: jobCount, totalScore: jobRating } = getAchievementsCount(job._id);
+            
+            return (
             <Card
               key={job._id}
               sx={{
@@ -259,12 +263,12 @@ const TeacherJobsPage = () => {
                   <Stack direction="row" alignItems="center" spacing={1.25}>
                     <EmojiEventsRounded fontSize="small" sx={{ color: GREEN }} />
                     <Typography variant="body2" color="text.secondary">
-                      {count} ta tasdiqlangan yutuq —{" "}
+                      {jobCount} ta tasdiqlangan yutuq —{" "}
                       <Box
                         component="span"
                         sx={{ color: GREEN, fontWeight: 800 }}
                       >
-                        {rating} ball
+                        {jobRating} ball
                       </Box>
                     </Typography>
                   </Stack>
@@ -292,7 +296,8 @@ const TeacherJobsPage = () => {
                 </Box>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </Box>
       ) : (
         <Card>
