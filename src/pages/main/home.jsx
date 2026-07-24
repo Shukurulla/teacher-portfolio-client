@@ -95,13 +95,12 @@ const TeacherJobsPage = () => {
   }, [isModalOpen, user]);
 
   const getAchievementsCount = (jobId) => {
-    const files = myFiles.filter((file) => file.from.job._id === jobId);
+    const files = myFiles.filter((file) => file.from.job === jobId);
     const length = files.length;
     const totalScore = files.reduce(
       (sum, item) =>
-        sum +
-        item.files.reduce((s, f) => s + (f.rating?.rating || 0), 0),
-      0
+        sum + item.files.reduce((s, f) => s + (f.rating?.rating || 0), 0),
+      0,
     );
 
     return { length, totalScore };
@@ -110,15 +109,13 @@ const TeacherJobsPage = () => {
   const existingTitles = jobs.map((item) => item.title);
   const filteredDirections = directions
     .filter((item) => !existingTitles.includes(item))
-    .filter((item) =>
-      item.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    .filter((item) => item.toLowerCase().includes(searchTerm.toLowerCase()));
   const handleAddJob = async () => {
     await JobService.createJob(dispatch, {
       title,
       workplace,
       province,
-      district
+      district,
     });
     setIsModalOpen(false);
     setTitle("");
@@ -129,9 +126,10 @@ const TeacherJobsPage = () => {
   const rating = myFiles
     .filter((c) => c.status == "Tasdiqlandi")
     .map((c) =>
-      c.files.reduce((sum, item) => sum + (item.rating?.rating || 0), 0)
+      c.files.reduce((sum, item) => sum + (item.rating?.rating || 0), 0),
     )
     .reduce((a, b) => a + b, 0);
+
   const count = myFiles.filter((c) => c.status == "Tasdiqlandi").length;
 
   const closeModal = () => {
@@ -200,11 +198,7 @@ const TeacherJobsPage = () => {
             gap: 2.5,
           }}
         >
-          {jobs.map((job) => {
-            // Har bir ish joyining o'ziga tegishli yutuq va ballini hisoblash
-            const { length: jobCount, totalScore: jobRating } = getAchievementsCount(job._id);
-            
-            return (
+          {jobs.map((job) => (
             <Card
               key={job._id}
               sx={{
@@ -261,14 +255,18 @@ const TeacherJobsPage = () => {
                     </Typography>
                   </Stack>
                   <Stack direction="row" alignItems="center" spacing={1.25}>
-                    <EmojiEventsRounded fontSize="small" sx={{ color: GREEN }} />
+                    <EmojiEventsRounded
+                      fontSize="small"
+                      sx={{ color: GREEN }}
+                    />
                     <Typography variant="body2" color="text.secondary">
-                      {jobCount} ta tasdiqlangan yutuq —{" "}
+                      {getAchievementsCount(job._id).length} ta tasdiqlangan
+                      yutuq —{" "}
                       <Box
                         component="span"
                         sx={{ color: GREEN, fontWeight: 800 }}
                       >
-                        {jobRating} ball
+                        {getAchievementsCount(job._id).totalScore} ball
                       </Box>
                     </Typography>
                   </Stack>
@@ -296,8 +294,7 @@ const TeacherJobsPage = () => {
                 </Box>
               </CardContent>
             </Card>
-            );
-          })}
+          ))}
         </Box>
       ) : (
         <Card>
@@ -319,12 +316,7 @@ const TeacherJobsPage = () => {
       )}
 
       {/* Add Job Modal */}
-      <Dialog
-        open={isModalOpen}
-        onClose={closeModal}
-        fullWidth
-        maxWidth="sm"
-      >
+      <Dialog open={isModalOpen} onClose={closeModal} fullWidth maxWidth="sm">
         <DialogTitle sx={{ fontWeight: 800 }}>
           Yangi ish joyi qo'shish
         </DialogTitle>
