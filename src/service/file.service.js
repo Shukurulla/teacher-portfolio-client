@@ -11,8 +11,6 @@ const FilesService = {
     dispatch(getFilesStart());
     try {
       const { data } = await axios.get("/file/my-files");
-      console.log(data.data.myFiles);
-
       dispatch(getFilesSuccess(data.data.myFiles));
     } catch (error) {
       console.log(error);
@@ -24,8 +22,8 @@ const FilesService = {
     try {
       const { data } = await axios.post("/file/upload", value);
       if (data.status == "success") {
-        const { data } = await axios.get("/file/my-files/");
-        dispatch(getFilesSuccess(data.data));
+        const { data: filesData } = await axios.get("/file/my-files/");
+        dispatch(getFilesSuccess(filesData.data.myFiles));
         toast.success(`Yutuq muaffaqiyatli qoshildi`);
       }
     } catch (error) {

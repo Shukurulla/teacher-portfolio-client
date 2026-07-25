@@ -14,12 +14,17 @@ import {
   Tooltip,
   Avatar,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { toast } from "react-hot-toast";
 import { PageHeader, Loader, EmptyState } from "../../components/ui";
 
@@ -61,15 +66,15 @@ const FILIALS = [
 ];
 
 export const directions = [
-  "I.Sport taʼlim muassasalari rahbar va oʻrinbosarlari",
-  "II. Sport taʼlim muassasalari yoʻriqchi-uslubchilari  ",
+  "I. Sport taʼlim muassasalari rahbar va oʻrinbosarlari",
+  "II. Sport taʼlim muassasalari yoʻriqchi-uslubchilari",
   "III. Sport turlarini rivojlantirish respublika markazlari, Olimpiya va paralimpiya sport turlariga tayyorlash markazlari, ixtisoslashtirilgan sport maktablari, ixtisoslashtirilgan olimpiya zaxiralari maktablari trenerlari",
   "IV. Sport maktablari trenerlari",
   "V. Sport psixologlari",
   "VI. Oliy taʼlim muassasalarining jismoniy tarbiya va sport yoʻnalishlari boʻyicha rahbar va pedagog kadrlari",
-  "VII. Kasbiy taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari(jismoniy tarbiya va sportga ixtisoslashtirilganlar bundan mustasno)",
+  "VII. Kasbiy taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari (jismoniy tarbiya va sportga ixtisoslashtirilganlar bundan mustasno)",
   "VIII. Umumiy oʻrta va oʻrta maxsus taʼlim tashkilotlari jismoniy tarbiya fani oʻqituvchilari",
-  "IX. Maktabgacha taʼlim tashkilotlari jismoniy tarbiya yuriqchilari",
+  "IX. Maktabgacha taʼlim tashkilotlari jismoniy tarbiya yoʻriqchilari",
 ];
 const filialName = (key) => FILIALS.find((f) => f.key === key)?.name || key;
 
@@ -123,6 +128,8 @@ const MalakaPage = () => {
   const [province, setProvince] = useState(defaultProvince);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [editSaving, setEditSaving] = useState(false);
   const currentFilial = FILIALS.find((f) => f.key === filial) || FILIALS[0];
   const provinces = currentFilial.provinces;
   const [direction, setDirection] = useState("");
@@ -208,8 +215,57 @@ const MalakaPage = () => {
       await axios.delete(`/malaka/${id}`);
       toast.success("O'chirildi");
       await load();
-    } catch {
-      toast.error("O'chirishda xatolik");
+    } catch (e) {
+      toast.error(e.response?.data?.message || "O'chirishda xatolik");
+    }
+  };
+
+  // --- Tahrirlash ---
+  const startEdit = (r) => {
+    const d = new Date(r.date);
+    const iso = Number.isNaN(d.getTime())
+      ? ""
+      : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+          d.getDate()
+        ).padStart(2, "0")}`;
+    setEditing({
+      _id: r._id,
+      date: iso,
+      filial: r.filial || defaultFilial,
+      province: r.province || "",
+      direction: r.direction || "",
+      note: r.note || "",
+    });
+  };
+
+  const editProvinces =
+    FILIALS.find((f) => f.key === editing?.filial)?.provinces || [];
+
+  const saveEdit = async () => {
+    if (!editing?.date) {
+      toast.error("Sanani tanlang");
+      return;
+    }
+    if (!directions.find((d) => d === editing.direction)) {
+      toast.error("Iltimos yonalishingizni tanlang");
+      return;
+    }
+    setEditSaving(true);
+    try {
+      await axios.put(`/malaka/${editing._id}`, {
+        date: editing.date,
+        filial: editing.filial,
+        province: editing.province,
+        direction: editing.direction,
+        note: editing.note,
+      });
+      toast.success("Yangilandi");
+      setEditing(null);
+      await load();
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Saqlashda xatolik");
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -544,6 +600,28 @@ const MalakaPage = () => {
                       </Box>
                     </Stack>
 
+                    <Stack
+                      direction={{ xs: "row", sm: "row" }}
+                      spacing={1}
+                      sx={{ flexShrink: 0 }}
+                    >
+                    <Tooltip title="Tahrirlash">
+                      <IconButton
+                        onClick={() => startEdit(r)}
+                        sx={{
+                          width: { xs: "100%", sm: 58 },
+                          height: { xs: 52, sm: 58 },
+                          borderRadius: { xs: 2.5, sm: "50%" },
+                          bgcolor: "#EEF3FF",
+                          flexShrink: 0,
+                          "&:hover": { bgcolor: "#DDE7FF" },
+                        }}
+                      >
+                        <EditRoundedIcon
+                          sx={{ color: "#3563E9", fontSize: { xs: 28, sm: 30 } }}
+                        />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="O'chirish">
                       <IconButton
                         onClick={() => remove(r._id)}
@@ -566,6 +644,7 @@ const MalakaPage = () => {
                         />
                       </IconButton>
                     </Tooltip>
+                    </Stack>
                   </Card>
                 );
               })}
@@ -573,6 +652,100 @@ const MalakaPage = () => {
           )}
         </Box>
       </Box>
+
+      {/* Arizani tahrirlash */}
+      <Dialog
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Arizani tahrirlash</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2.5} sx={{ mt: 1 }}>
+            <TextField
+              type="date"
+              label="Sana"
+              value={editing?.date || ""}
+              onChange={(e) =>
+                setEditing((s) => ({ ...s, date: e.target.value }))
+              }
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ min: minDate }}
+            />
+            <TextField
+              select
+              label="Filial"
+              value={editing?.filial || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                const item = FILIALS.find((f) => f.key === value);
+                setEditing((s) => ({
+                  ...s,
+                  filial: value,
+                  province: item?.provinces?.[0] || "",
+                }));
+              }}
+              fullWidth
+            >
+              {FILIALS.map((f) => (
+                <MenuItem key={f.key} value={f.key}>
+                  {f.name}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label="Viloyat"
+              value={editing?.province || ""}
+              onChange={(e) =>
+                setEditing((s) => ({ ...s, province: e.target.value }))
+              }
+              fullWidth
+            >
+              {editProvinces.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label="Yonalish"
+              value={editing?.direction || ""}
+              onChange={(e) =>
+                setEditing((s) => ({ ...s, direction: e.target.value }))
+              }
+              fullWidth
+            >
+              {directions.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Izoh (ixtiyoriy)"
+              value={editing?.note || ""}
+              onChange={(e) =>
+                setEditing((s) => ({ ...s, note: e.target.value }))
+              }
+              fullWidth
+              multiline
+              rows={2}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button color="inherit" onClick={() => setEditing(null)}>
+            Bekor qilish
+          </Button>
+          <Button variant="contained" onClick={saveEdit} disabled={editSaving}>
+            {editSaving ? "Saqlanmoqda..." : "Saqlash"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

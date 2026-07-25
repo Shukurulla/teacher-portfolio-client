@@ -17,8 +17,8 @@ import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import AchievmentService from "../../service/achievment.service";
-import { generateSlug } from "../../utils/generateSlug";
-import { PageHeader, SoftChip } from "../../components/ui";
+import { findSection } from "../../utils/matchSection";
+import { PageHeader, SoftChip, EmptyState } from "../../components/ui";
 import CreateBox from "./create.box";
 import { formatDate } from "../../utils/format";
 
@@ -32,9 +32,9 @@ const CreateAchievmetSection = () => {
     AchievmentService.getAchievments(dispatch, id);
   }, [dispatch, id]);
 
-  const sectionAchievments = achievments.find(
-    (c) => generateSlug(c.section) === generateSlug(slug)
-  );
+  // Ish joyi nomi rim raqamli ("IV. Sport maktablari...") bo'lishi mumkin,
+  // bo'lim esa raqamsiz — shuning uchun normalizatsiya bilan qidiramiz.
+  const sectionAchievments = findSection(achievments, slug);
 
   const [modalState, setModalState] = useState({
     state: false,
@@ -92,7 +92,28 @@ const CreateAchievmetSection = () => {
     );
   }
 
-  if (!sectionAchievments) return <Box />;
+  // Bo'lim topilmasa — oq ekran o'rniga tushunarli holat
+  if (!sectionAchievments)
+    return (
+      <Box>
+        <Card>
+          <EmptyState
+            icon={<DescriptionRoundedIcon />}
+            title="Bu kasb bo'yicha yutuq bo'limi topilmadi"
+            description="Ish joyingiz nomi yutuq bo'limlariga mos kelmadi. Ish joyini tahrirlab, ro'yxatdan qaytadan tanlang."
+            action={
+              <Button
+                variant="contained"
+                startIcon={<ArrowBackRoundedIcon />}
+                onClick={() => navigate(`/job/${id}`)}
+              >
+                Ish joyiga qaytish
+              </Button>
+            }
+          />
+        </Card>
+      </Box>
+    );
 
   return (
     <Box>
