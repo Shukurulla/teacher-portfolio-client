@@ -367,51 +367,34 @@ const MalakaPage = () => {
         </Card>
 
         <Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              mb: 2.5,
-            }}
-          >
+          {/* Ro'yxat sarlavhasi — ixcham */}
+          <Stack direction="row" alignItems="center" gap={1.5} mb={2}>
             <Avatar
-              sx={{
-                width: { xs: 54, sm: 64 },
-                height: { xs: 54, sm: 64 },
-                bgcolor: "#EEF3FF",
-                color: "#3563E9",
-                flexShrink: 0,
-              }}
+              sx={{ width: 40, height: 40, bgcolor: "#EEF3FF", color: "#3563E9" }}
             >
-              <CalendarMonthRoundedIcon sx={{ fontSize: { xs: 30, sm: 36 } }} />
+              <CalendarMonthRoundedIcon sx={{ fontSize: 22 }} />
             </Avatar>
-
             <Box sx={{ minWidth: 0 }}>
-              <Typography
-                sx={{
-                  fontWeight: 800,
-                  fontSize: { xs: 28, sm: 36 },
-                  color: "#1A2238",
-                  lineHeight: 1,
-                }}
-              >
+              <Typography variant="h6" sx={{ lineHeight: 1.2 }}>
                 Rejalarim
               </Typography>
-
-              <Typography
-                color="#6B7280"
-                fontSize={{ xs: 14, sm: 16 }}
-                mt={0.75}
-              >
-                Rejalashtirilgan malaka oshirish kurslari ro'yxati
+              <Typography variant="body2" color="text.secondary">
+                Rejalashtirilgan malaka oshirish kurslari
               </Typography>
             </Box>
-          </Box>
+            <Box flex={1} />
+            {!loading && records.length > 0 && (
+              <Chip
+                size="small"
+                label={records.length}
+                sx={{ bgcolor: "#EEF3FF", color: "#3563E9", fontWeight: 700 }}
+              />
+            )}
+          </Stack>
 
           {loading ? (
             <Card>
-              <Loader height={200} />
+              <Loader height={180} />
             </Card>
           ) : records.length === 0 ? (
             <Card>
@@ -422,228 +405,124 @@ const MalakaPage = () => {
               />
             </Card>
           ) : (
-            <Stack spacing={2}>
+            <Stack spacing={1.5}>
               {records.map((r) => {
                 const note = r.note?.trim();
-                const dateParts = getPlanDateParts(r.date);
+                const d = getPlanDateParts(r.date);
 
                 return (
                   <Card
                     key={r._id}
-                    elevation={0}
                     sx={{
-                      p: { xs: 2, sm: 2.5 },
-                      border: "1px solid #E8ECF5",
+                      p: 1.75,
                       display: "flex",
-                      alignItems: { xs: "stretch", sm: "center" },
-                      justifyContent: "space-between",
-                      gap: { xs: 2, sm: 2.5 },
+                      alignItems: "center",
+                      gap: 1.75,
                       position: "relative",
                       overflow: "hidden",
-                      padding: "10px",
-                      flexDirection: { xs: "column", sm: "row" },
                       "&:before": {
                         content: '""',
                         position: "absolute",
                         left: 0,
                         top: 0,
                         bottom: 0,
-                        width: 7,
+                        width: 4,
                         bgcolor: "#3563E9",
                       },
                     }}
                   >
-                    <Stack
-                      direction={{ xs: "column", md: "row" }}
-                      alignItems={{ xs: "stretch", md: "center" }}
-                      gap={{ xs: 2, md: 3 }}
+                    {/* Sana bloki */}
+                    <Box
                       sx={{
-                        minWidth: 0,
-                        flex: 1,
-                        pl: { xs: 0.75, sm: 1 },
+                        ml: 0.5,
+                        width: 62,
+                        flexShrink: 0,
+                        textAlign: "center",
+                        bgcolor: "#F5F8FF",
+                        borderRadius: 2,
+                        py: 0.75,
                       }}
                     >
-                      <Box
-                        sx={{
-                          width: { xs: "100%", md: 128 },
-                          // minHeight: { xs: 112, md: 158 },
-                          borderRadius: { xs: 3, sm: 4 },
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          flexShrink: 0,
-                        }}
+                      <Typography
+                        sx={{ fontWeight: 800, fontSize: 22, color: "#3563E9", lineHeight: 1.1 }}
                       >
-                        <CalendarMonthRoundedIcon
-                          sx={{
-                            color: "#3563E9",
-                            fontSize: { xs: 30, md: 36 },
-                            mb: 1,
-                          }}
-                        />
+                        {d.day}
+                      </Typography>
+                      <Typography
+                        sx={{ fontWeight: 700, fontSize: 10, color: "#3563E9", letterSpacing: .3 }}
+                      >
+                        {d.month}
+                      </Typography>
+                      <Typography sx={{ fontSize: 10, color: "text.secondary" }}>
+                        {d.year}
+                      </Typography>
+                    </Box>
 
-                        <Typography
-                          fontWeight={800}
-                          fontSize={{ xs: 40, md: 48 }}
-                          color="#3563E9"
-                          lineHeight={1}
-                        >
-                          {dateParts.day}
-                        </Typography>
+                    {/* Ma'lumot */}
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, color: "#3563E9", mb: 0.4 }}
+                        noWrap
+                      >
+                        {filialName(r.filial)}
+                      </Typography>
 
-                        <Typography
-                          fontWeight={700}
-                          color="#3563E9"
-                          fontSize={15}
-                        >
-                          {dateParts.month}
-                        </Typography>
-
-                        <Typography mt={0.5} color="#64748B" fontSize={15}>
-                          {dateParts.year}
-                        </Typography>
-                      </Box>
-
-                      <Box sx={{ minWidth: 0 }}>
-                        <Chip
-                          label={filialName(r.filial)}
-                          sx={{
-                            maxWidth: "100%",
-                            height: "auto",
-                            bgcolor: "#EEF3FF",
-                            color: "#3563E9",
-                            fontWeight: 700,
-                            fontSize: { xs: 14, sm: 15 },
-                            px: 1,
-                            py: 1,
-                            borderRadius: 2,
-                            "& .MuiChip-label": {
-                              display: "block",
-                              whiteSpace: "normal",
-                              lineHeight: 1.35,
-                              py: 0.35,
-                            },
-                          }}
-                        />
-
-                        {r.province && (
-                          <Box
-                            mt={4}
-                            // display="flex"
-                            style={{
-                              display: "flex",
-                              marginTop: "15px",
-                              gap: "10px",
-                            }}
-                            alignItems="center"
-                            gap={1}
-                            sx={{ minWidth: 0 }}
-                          >
-                            <LocationOnRoundedIcon
-                              sx={{
-                                color: "#5C667A",
-                                fontSize: { xs: 24, sm: 28 },
-                                flexShrink: 0,
-                              }}
-                            />
-
-                            <Typography
-                              fontSize={{ xs: 17, sm: 20 }}
-                              fontWeight={700}
-                              sx={{ overflowWrap: "anywhere" }}
-                            >
-                              {r.province}
-                            </Typography>
-                          </Box>
-                        )}
-                        {r.direction && (
-                          <Box
-                            mt={4}
-                            // display="flex"
-                            style={{
-                              display: "flex",
-                              marginTop: "15px",
-                              gap: "10px",
-                            }}
-                            alignItems="center"
-                            gap={1}
-                            sx={{ minWidth: 0 }}
-                          >
-                            <SchoolRoundedIcon
-                              sx={{
-                                color: "#5C667A",
-                                fontSize: { xs: 24, sm: 28 },
-                                flexShrink: 0,
-                              }}
-                            />
-
-                            <Typography
-                              fontSize={{ xs: 17, sm: 20 }}
-                              fontWeight={700}
-                              sx={{ overflowWrap: "anywhere" }}
-                            >
-                              {r.direction}
-                            </Typography>
-                          </Box>
-                        )}
-                        {note && (
-                          <Typography
-                            mt={2}
-                            color="#7A8599"
-                            fontSize={{ xs: 15, sm: 17 }}
-                            sx={{ overflowWrap: "anywhere", lineHeight: 1.45 }}
-                          >
-                            {note}
+                      {r.province && (
+                        <Stack direction="row" alignItems="center" gap={0.75}>
+                          <LocationOnRoundedIcon
+                            sx={{ fontSize: 15, color: "text.secondary", flexShrink: 0 }}
+                          />
+                          <Typography variant="body2" color="text.secondary" noWrap>
+                            {r.province}
                           </Typography>
-                        )}
-                      </Box>
-                    </Stack>
+                        </Stack>
+                      )}
 
-                    <Stack
-                      direction={{ xs: "row", sm: "row" }}
-                      spacing={1}
-                      sx={{ flexShrink: 0 }}
-                    >
-                    <Tooltip title="Tahrirlash">
-                      <IconButton
-                        onClick={() => startEdit(r)}
-                        sx={{
-                          width: { xs: "100%", sm: 58 },
-                          height: { xs: 52, sm: 58 },
-                          borderRadius: { xs: 2.5, sm: "50%" },
-                          bgcolor: "#EEF3FF",
-                          flexShrink: 0,
-                          "&:hover": { bgcolor: "#DDE7FF" },
-                        }}
-                      >
-                        <EditRoundedIcon
-                          sx={{ color: "#3563E9", fontSize: { xs: 28, sm: 30 } }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="O'chirish">
-                      <IconButton
-                        onClick={() => remove(r._id)}
-                        sx={{
-                          width: { xs: "100%", sm: 58 },
-                          height: { xs: 52, sm: 58 },
-                          borderRadius: { xs: 2.5, sm: "50%" },
-                          bgcolor: "#FFF1F1",
-                          flexShrink: 0,
-                          "&:hover": {
-                            bgcolor: "#FFE4E4",
-                          },
-                        }}
-                      >
-                        <DeleteOutlineRoundedIcon
-                          sx={{
-                            color: "#E53935",
-                            fontSize: { xs: 30, sm: 34 },
-                          }}
-                        />
-                      </IconButton>
-                    </Tooltip>
+                      {r.direction && (
+                        <Stack direction="row" alignItems="flex-start" gap={0.75} mt={0.4}>
+                          <SchoolRoundedIcon
+                            sx={{ fontSize: 15, color: "text.secondary", flexShrink: 0, mt: "2px" }}
+                          />
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                            title={r.direction}
+                          >
+                            {r.direction}
+                          </Typography>
+                        </Stack>
+                      )}
+
+                      {note && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ display: "block", mt: 0.5, fontStyle: "italic" }}
+                        >
+                          {note}
+                        </Typography>
+                      )}
+                    </Box>
+
+                    {/* Amallar */}
+                    <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+                      <Tooltip title="Tahrirlash">
+                        <IconButton size="small" onClick={() => startEdit(r)}>
+                          <EditRoundedIcon sx={{ fontSize: 19, color: "#3563E9" }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="O'chirish">
+                        <IconButton size="small" onClick={() => remove(r._id)}>
+                          <DeleteOutlineRoundedIcon sx={{ fontSize: 19, color: "#E53935" }} />
+                        </IconButton>
+                      </Tooltip>
                     </Stack>
                   </Card>
                 );
