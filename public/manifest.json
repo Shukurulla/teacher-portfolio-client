@@ -1,0 +1,30 @@
+{
+  "name": "Portfolio Sport — sport mutaxassislari portfoliosi",
+  "short_name": "Portfolio Sport",
+  "description": "Jismoniy tarbiya va sport mutaxassislari uchun elektron portfolio va malaka oshirish tizimi.",
+  "lang": "uz",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

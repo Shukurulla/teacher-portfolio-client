@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /$
+Allow: /auth/login
+Allow: /auth/register
+Allow: /foydalanuvchilar
+Allow: /boglanish
+
+# Shaxsiy kabinet sahifalari indekslanmasin
+Disallow: /profile
+Disallow: /settings
+Disallow: /achievments
+Disallow: /achievment/
+Disallow: /job/
+Disallow: /malaka
+Disallow: /special
+
+Sitemap: https://portfolio-sport.uz/sitemap.xml
